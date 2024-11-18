@@ -1,25 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import AppRoutes from "./approutes/AppRoutes";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const isLoggedIn = localStorage.getItem('username') !== null; // 로그인 상태 확인
+        if (!isLoggedIn) {
+            navigate('/signin'); // 로그인이 되어 있지 않으면 /signin으로 이동
+        }
+    }, [navigate]);
+
+    return (
+        <>
+            <AppRoutes />
+        </>
+    );
+};
 
 export default App;
