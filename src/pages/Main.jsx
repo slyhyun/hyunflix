@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Header from "../components/Header";
 import axios from "axios";
-import MainSection from "../components/MainSection"; // MainSection 컴포넌트
-import MainHeader from "../components/MainHeader";
+import Banner from "../components/Banner"; // Banner 컴포넌트
+import Partition from "../components/Partition"; // Partition 컴포넌트
 import Loading from "../components/Loading";
 
 const Main = () => {
@@ -12,23 +12,16 @@ const Main = () => {
         nowPlaying: [],
         topRated: [],
         upcoming: [],
-    }); // 영화 데이터를 객체 기반 상태로 관리
-    const [loading, setLoading] = useState(true); // 로딩 상태 관리
+    });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const password = localStorage.getItem("password"); // Local Storage에서 비밀번호(TMDB API Key) 가져오기
+        const password = localStorage.getItem("password"); // Local Storage에서 비밀번호(API 키) 가져오기
 
         if (!password) {
             toast.error("로그인이 필요합니다. 로그인 후 다시 시도해 주세요.");
             return;
         }
-
-        const options = {
-            headers: {
-                accept: "application/json",
-                Authorization: `Bearer ${password}`, // API 키로 인증
-            },
-        };
 
         const fetchMovies = async () => {
             try {
@@ -37,20 +30,16 @@ const Main = () => {
                 // 4개의 TMDB API 호출
                 const [popular, nowPlaying, topRated, upcoming] = await Promise.all([
                     axios.get(
-                        "https://api.themoviedb.org/3/movie/popular?language=ko-KR&page=1",
-                        options
+                        `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=1`
                     ),
                     axios.get(
-                        "https://api.themoviedb.org/3/movie/now_playing?language=ko-KR&page=1",
-                        options
+                        `https://api.themoviedb.org/3/movie/now_playing?api_key=${password}&language=ko-KR&page=1`
                     ),
                     axios.get(
-                        "https://api.themoviedb.org/3/movie/top_rated?language=ko-KR&page=1",
-                        options
+                        `https://api.themoviedb.org/3/movie/top_rated?api_key=${password}&language=ko-KR&page=1`
                     ),
                     axios.get(
-                        "https://api.themoviedb.org/3/movie/upcoming?language=ko-KR&page=1",
-                        options
+                        `https://api.themoviedb.org/3/movie/upcoming?api_key=${password}&language=ko-KR&page=1`
                     ),
                 ]);
 
@@ -83,10 +72,10 @@ const Main = () => {
             <Toaster /> {/* Toast 메시지를 렌더링 */}
             <Header />
             <Container>
-                <MainHeader movies={movies.upcoming} title="개봉 예정 영화" />
-                <MainSection title="인기 영화" movies={movies.popular} />
-                <MainSection title="현재 상영 영화" movies={movies.nowPlaying} />
-                <MainSection title="최고 평점 영화" movies={movies.topRated} />
+                <Banner movies={movies.upcoming} title="개봉 예정 영화" /> {/* Banner 컴포넌트 */}
+                <Partition title="인기 영화" movies={movies.popular} /> {/* Partition 컴포넌트 */}
+                <Partition title="현재 상영 영화" movies={movies.nowPlaying} /> {/* Partition 컴포넌트 */}
+                <Partition title="최고 평점 영화" movies={movies.topRated} /> {/* Partition 컴포넌트 */}
             </Container>
         </>
     );
