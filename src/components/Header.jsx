@@ -58,6 +58,7 @@ const UserActions = styled.div`
     display: flex;
     align-items: center;
     gap: 15px;
+    margin-right: 50px; /* 컨테이너 내 여백 조정 */
 `;
 
 const LogoutButton = styled.div`
@@ -65,7 +66,6 @@ const LogoutButton = styled.div`
     align-items: center;
     cursor: pointer;
     color: white;
-    margin-left: -10px; /* 왼쪽으로 이동 */
     &:hover {
         color: red;
     }
