@@ -11,13 +11,12 @@ const Container = styled.div`
     width: calc(100%);
     margin: 0;
     padding: 0;
-    height: auto;
-    background-color: #000;
+    background-color: #0d1117;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-bottom: 80px;
+    padding-bottom: 100px;
 `;
 
 
