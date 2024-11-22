@@ -87,9 +87,9 @@ const Main = () => {
             <Toaster /> {/* Toast 메시지를 렌더링 */}
             <Header />
             <Container>
-                <Banner movies={movies.upcoming} title="개봉 예정 영화" /> {/* Banner 컴포넌트 */}
+                <Banner movies={movies.nowPlaying} title="현재 상영 영화" /> {/* Banner 컴포넌트 */}
                 <Partition title="인기 영화" movies={movies.popular} /> {/* Partition 컴포넌트 */}
-                <Partition title="현재 상영 영화" movies={movies.nowPlaying} /> {/* Partition 컴포넌트 */}
+                <Partition title="개봉 예정 영화" movies={movies.upcoming} /> {/* Partition 컴포넌트 */}
                 <Partition title="최고 평점 영화" movies={movies.topRated} /> {/* Partition 컴포넌트 */}
             </Container>
         </>
