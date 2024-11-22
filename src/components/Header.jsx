@@ -5,6 +5,79 @@ import { BiSolidCameraMovie } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import Menu from './Menu';
 import { CSSTransition } from 'react-transition-group';
+import styled from "styled-components";
+
+const HeaderWrapper = styled.header`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    background-color: ${(props) => (props.isScrolled ? "#000" : "transparent")};
+    color: #fff;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+`;
+
+const Logo = styled.div`
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .movie-icon {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+    .logo-text {
+        font-size: 20px;
+        font-weight: bold;
+    }
+`;
+
+const Nav = styled.nav`
+    display: flex;
+    gap: 20px;
+
+    p {
+        cursor: pointer;
+        &:hover {
+            color: #946efd;
+        }
+    }
+`;
+
+const UserActions = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .username {
+        font-size: 14px;
+    }
+
+    .logout {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        span {
+            margin-left: 5px;
+        }
+
+        &:hover {
+            color: #946efd;
+        }
+    }
+`;
+
+const HamburgerIcon = styled(GiHamburgerMenu)`
+    font-size: 24px;
+    cursor: pointer;
+`;
 
 const Header = () => {
     const [username, setUsername] = useState(''); // 사용자 이름
