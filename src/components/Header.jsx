@@ -6,8 +6,6 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import Menu from "./Menu";
 import styled from "styled-components";
 
-const HEADER_HEIGHT = "60px"; // 헤더 높이 설정
-
 const HeaderWrapper = styled.header`
     position: fixed;
     top: 0;
@@ -21,13 +19,6 @@ const HeaderWrapper = styled.header`
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    height: ${HEADER_HEIGHT};
-`;
-
-const PageWrapper = styled.div`
-    padding-top: ${HEADER_HEIGHT}; // 헤더 높이만큼 위에 여백 추가
-    background-color: #1a1a1a; // 배경색 설정 (필요하면 조정 가능)
-    min-height: 100vh; // 페이지 전체를 차지하도록 설정
 `;
 
 const Logo = styled.div`
@@ -67,19 +58,20 @@ const UserActions = styled.div`
     display: flex;
     align-items: center;
     gap: 15px;
+`;
 
-    .logout {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-
-        span {
-            margin-left: 5px;
-        }
-
-        &:hover {
-            color: red;
-        }
+const LogoutButton = styled.div`
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: white;
+    margin-left: -10px; /* 왼쪽으로 이동 */
+    &:hover {
+        color: red;
+    }
+    span {
+        margin-left: 5px;
+        font-size: 14px;
     }
 `;
 
