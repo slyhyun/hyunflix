@@ -5,6 +5,15 @@ import axios from "axios";
 import Banner from "../components/Banner"; // Banner 컴포넌트
 import Partition from "../components/Partition"; // Partition 컴포넌트
 import Loading from "../components/Loading";
+import styled from "styled-components";
+
+const Container = styled.div`
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+`;
 
 const Main = () => {
     const [movies, setMovies] = useState({
