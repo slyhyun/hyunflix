@@ -27,7 +27,7 @@ const SliderWindow = styled.div`
 
 const MovieSlider = styled.div`
     display: flex;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease-in-out;
     padding: 20px 0;
 `;
 
@@ -113,19 +113,20 @@ const RightButton = styled(SliderButton)`
 
 const Partition = ({ movies, title }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const itemsToShow = 20; // 항상 20개의 영화가 보이도록 설정
+    const itemsToShow = 5; // 화면에 표시되는 영화 개수
+    const cardWidth = 210; // 카드 폭 (200px + 간격 10px)
 
     const handleNext = () => {
         setCurrentIndex((prevIndex) => {
-            const nextIndex = prevIndex + itemsToShow;
-            return nextIndex >= movies.length ? 0 : nextIndex;
+            const maxIndex = Math.ceil(movies.length / itemsToShow) - 1; // 최대 이동 가능 인덱스 계산
+            return prevIndex < maxIndex ? prevIndex + 1 : 0; // 마지막 슬라이드 후 다시 처음으로
         });
     };
 
     const handlePrev = () => {
         setCurrentIndex((prevIndex) => {
-            const nextIndex = prevIndex - itemsToShow;
-            return nextIndex < 0 ? Math.max(0, movies.length - itemsToShow) : nextIndex;
+            const maxIndex = Math.ceil(movies.length / itemsToShow) - 1;
+            return prevIndex > 0 ? prevIndex - 1 : maxIndex; // 첫 번째 슬라이드에서 마지막으로 이동
         });
     };
 
@@ -155,7 +156,7 @@ const Partition = ({ movies, title }) => {
                 <SliderWindow>
                     <MovieSlider
                         style={{
-                            transform: `translateX(-${currentIndex * (200 + 10)}px)` // 카드 크기(200px) + 간격(10px)
+                            transform: `translateX(-${currentIndex * itemsToShow * cardWidth}px)`, // 이동량 계산
                         }}
                     >
                         {renderMovies()}
