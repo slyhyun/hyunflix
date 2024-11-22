@@ -8,12 +8,18 @@ import Loading from "../components/Loading";
 import styled from "styled-components";
 
 const Container = styled.div`
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    box-sizing: border-box;
+    width: calc(100%);
+    margin: 0;
+    padding: 0;
+    height: auto;
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 80px;
 `;
+
 
 const Main = () => {
     const [movies, setMovies] = useState({
