@@ -144,51 +144,45 @@ const Header = () => {
     };
 
     return (
-        <>
-            <HeaderWrapper
-                isScrolled={isScrolled}
-                isHovered={isHovered}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
-                <Logo onClick={() => navigateTo('/')}>
-                    <BiSolidCameraMovie className="movie-icon" />
-                    <h1 className="logo-text">Hyunflix</h1>
-                </Logo>
+        <HeaderWrapper
+            isScrolled={isScrolled}
+            isHovered={isHovered}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <Logo onClick={() => navigateTo('/')}>
+                <BiSolidCameraMovie className="movie-icon" />
+                <h1 className="logo-text">Hyunflix</h1>
+            </Logo>
 
-                {!isMobile && (
-                    <Nav>
-                        <p onClick={() => navigateTo('/')}>홈</p>
-                        <p onClick={() => navigateTo('/popular')}>대세 콘텐츠</p>
-                        <p onClick={() => navigateTo('/search')}>찾아보기</p>
-                        <p onClick={() => navigateTo('/wishlist')}>내가 찜한 리스트</p>
-                    </Nav>
-                )}
+            {!isMobile && (
+                <Nav>
+                    <p onClick={() => navigateTo('/')}>홈</p>
+                    <p onClick={() => navigateTo('/popular')}>대세 콘텐츠</p>
+                    <p onClick={() => navigateTo('/search')}>찾아보기</p>
+                    <p onClick={() => navigateTo('/wishlist')}>내가 찜한 리스트</p>
+                </Nav>
+            )}
 
-                {!isMobile && (
-                    <UserActions>
-                        <div className="logout" onClick={handleLogout}>
-                            <GrLogout />
-                            <span>로그아웃</span>
-                        </div>
-                    </UserActions>
-                )}
+            {!isMobile && (
+                <UserActions>
+                    <LogoutButton onClick={handleLogout}>
+                        <GrLogout />
+                        <span>로그아웃</span>
+                    </LogoutButton>
+                </UserActions>
+            )}
 
-                {isMobile && <HamburgerIcon onClick={toggleMenu} />}
+            {isMobile && <HamburgerIcon onClick={toggleMenu} />}
 
-                {menu && isMobile && (
-                    <Menu
-                        handleLogout={handleLogout}
-                        username={username}
-                        onClose={closeMenu}
-                    />
-                )}
-            </HeaderWrapper>
-            <PageWrapper>
-                {/* 페이지 콘텐츠를 여기에 렌더링 */}
-                <p style={{ color: "white" }}>헤더가 콘텐츠와 겹치지 않도록 설정되었습니다!</p>
-            </PageWrapper>
-        </>
+            {menu && isMobile && (
+                <Menu
+                    handleLogout={handleLogout}
+                    username={username}
+                    onClose={closeMenu}
+                />
+            )}
+        </HeaderWrapper>
     );
 };
 
