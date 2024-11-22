@@ -1,27 +1,119 @@
 import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+const RowWrapper = styled.div`
+    margin-bottom: 40px;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+`;
+
+const RowTitle = styled.h2`
+    text-align: left;
+    margin-left: 30px;
+    color: white;
+`;
+
+const SliderContainer = styled.div`
+    position: relative;
+    touch-action: pan-y;
+`;
+
+const SliderWindow = styled.div`
+    overflow: hidden;
+    margin: 0 60px; /* 좌우 공백 */
+`;
+
+const MovieSlider = styled.div`
+    display: flex;
+    transition: transform 0.3s ease;
+    padding: 20px 0;
+`;
+
+const MovieOverlay = styled.div`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+`;
+
+const MovieCard = styled.div`
+    flex: 0 0 auto;
+    width: 200px;
+    margin-right: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+
+    &:hover ${MovieOverlay} {
+        opacity: 1;
+    }
+`;
+
+const MovieImage = styled.img`
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+`;
+
+const MovieTitle = styled.h4`
+    font-size: 16px;
+    margin: 0;
+`;
+
+const MovieInfo = styled.p`
+    font-size: 14px;
+    margin: 5px 0 0;
+`;
+
+const SliderButton = styled.button`
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 15px;
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.3s, background-color 0.3s;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+`;
+
+const LeftButton = styled(SliderButton)`
+    left: 0;
+`;
+
+const RightButton = styled(SliderButton)`
+    right: 0;
+`;
 
 const Partition = ({ movies, title }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [itemsToShow, setItemsToShow] = useState(5); // 기본 표시 항목 수 설정
-    const [wishlist, setWishlist] = useState(JSON.parse(localStorage.getItem('wishlist')) || []);
-
-    // 창 크기에 따라 표시할 항목 수 조정
-    useEffect(() => {
-        const updateItemsToShow = () => {
-            const width = window.innerWidth;
-            if (width >= 1200) setItemsToShow(4);
-            else if (width >= 992) setItemsToShow(3);
-            else if (width >= 768) setItemsToShow(2);
-            else setItemsToShow(1);
-        };
-
-        window.addEventListener("resize", updateItemsToShow);
-        updateItemsToShow();
-
-        return () => {
-            window.removeEventListener("resize", updateItemsToShow);
-        };
-    }, []);
+    const itemsToShow = 20; // 항상 20개의 영화가 보이도록 설정
 
     const handleNext = () => {
         setCurrentIndex((prevIndex) => {
@@ -37,40 +129,43 @@ const Partition = ({ movies, title }) => {
         });
     };
 
-    const handleAddToWishlist = (movie) => {
-        const exists = wishlist.some((item) => item.id === movie.id);
-        const updatedWishlist = exists
-            ? wishlist.filter((item) => item.id !== movie.id)
-            : [...wishlist, movie];
-        setWishlist(updatedWishlist);
-        localStorage.setItem('wishlist', JSON.stringify(updatedWishlist));
-    };
-
-    // 현재 인덱스 기준으로 영화 목록 렌더링
     const renderMovies = () => {
-        const visibleMovies = movies.slice(currentIndex, currentIndex + itemsToShow);
-        return visibleMovies.map((movie) => (
-            <div key={movie.id} onClick={() => handleAddToWishlist(movie)}>
-                <img
+        return movies.map((movie) => (
+            <MovieCard key={movie.id}>
+                <MovieImage
                     src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                     alt={movie.title}
                 />
-                <h4>{movie.title}</h4>
-                <p>평점: {movie.vote_average} / 10</p>
-                {wishlist.some((item) => item.id === movie.id) && <span>★ 즐겨찾기</span>}
-            </div>
+                <MovieOverlay>
+                    <MovieTitle>{movie.title}</MovieTitle>
+                    <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
+                    <MovieInfo>{movie.release_date}</MovieInfo>
+                </MovieOverlay>
+            </MovieCard>
         ));
     };
 
     return (
-        <div>
-            <h2>{title}</h2>
-            <div>
-                <button onClick={handlePrev}>이전</button>
-                <div>{renderMovies()}</div>
-                <button onClick={handleNext}>다음</button>
-            </div>
-        </div>
+        <RowWrapper>
+            <RowTitle>{title}</RowTitle>
+            <SliderContainer>
+                <LeftButton onClick={handlePrev}>
+                    <FaChevronLeft />
+                </LeftButton>
+                <SliderWindow>
+                    <MovieSlider
+                        style={{
+                            transform: `translateX(-${currentIndex * (200 + 10)}px)` // 카드 크기(200px) + 간격(10px)
+                        }}
+                    >
+                        {renderMovies()}
+                    </MovieSlider>
+                </SliderWindow>
+                <RightButton onClick={handleNext}>
+                    <FaChevronRight />
+                </RightButton>
+            </SliderContainer>
+        </RowWrapper>
     );
 };
 
