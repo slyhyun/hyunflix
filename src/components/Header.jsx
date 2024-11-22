@@ -58,23 +58,20 @@ const UserActions = styled.div`
     display: flex;
     align-items: center;
     gap: 15px;
+`;
 
-    .username {
-        font-size: 14px;
+const LogoutButton = styled.div`
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: white;
+    margin-left: -10px; /* 왼쪽으로 이동 */
+    &:hover {
+        color: red;
     }
-
-    .logout {
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-
-        span {
-            margin-left: 5px;
-        }
-
-        &:hover {
-            color: red;
-        }
+    span {
+        margin-left: 5px;
+        font-size: 14px;
     }
 `;
 
@@ -88,7 +85,7 @@ const Header = () => {
     const [menu, setMenu] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isHovered, setIsHovered] = useState(false); // Header에 마우스 올라가는 상태
+    const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -161,17 +158,10 @@ const Header = () => {
 
             {!isMobile && (
                 <UserActions>
-                    {username ? (
-                        <>
-                            <p className="username">{username}님 환영합니다!</p>
-                            <div className="logout" onClick={handleLogout}>
-                                <GrLogout />
-                                <span>로그아웃</span>
-                            </div>
-                        </>
-                    ) : (
-                        <p onClick={() => navigateTo('/signin')}>로그인</p>
-                    )}
+                    <LogoutButton onClick={handleLogout}>
+                        <GrLogout />
+                        <span>로그아웃</span>
+                    </LogoutButton>
                 </UserActions>
             )}
 
