@@ -64,7 +64,7 @@ const Header = () => {
                 {/* 로고 */}
                 <div className="logo" onClick={() => navigateTo('/')}>
                     <BiSolidCameraMovie className="movie-icon" />
-                    <h1 className="logo-text">Dongflix</h1>
+                    <h1 className="logo-text">Hyunflix</h1>
                 </div>
 
                 {/* 데스크톱 메뉴 */}
