@@ -4,7 +4,7 @@ import Loading from "./Loading";
 
 const BannerWrapper = styled.div`
     height: 60vh;
-    max-width: 95svw;
+    width: 100%;
     background-size: cover;
     background-position: center;
     color: white;
@@ -64,16 +64,6 @@ const Button = styled.button`
     }
 `;
 
-const TitleButton = styled(Button)`
-    margin-top: 5px;
-    width: 150px;
-
-    @media screen and (max-height: 768px) {
-        width: 100px;
-        font-size: 0.75rem;
-    }
-`;
-
 const Banner = ({ movies }) => {
     const [selectedMovieIndex, setSelectedMovieIndex] = useState(0);
 
@@ -101,9 +91,8 @@ const Banner = ({ movies }) => {
                 <BannerDescription>{selectedMovie?.overview || "설명이 없습니다."}</BannerDescription>
                 <div>
                     <Button>재생</Button>
-                    <Button>정보</Button>
+                    <Button>자세히</Button>
                 </div>
-                <TitleButton>추가 작업</TitleButton>
             </BannerContent>
         </BannerWrapper>
     );
