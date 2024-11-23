@@ -20,7 +20,6 @@ const Container = styled.div`
     padding-bottom: 100px;
 `;
 
-
 const Main = () => {
     const [movies, setMovies] = useState({
         popular: [],
@@ -67,7 +66,6 @@ const Main = () => {
                 });
 
                 setLoading(false);
-                toast.success("영화 데이터를 성공적으로 불러왔습니다!");
             } catch (err) {
                 console.error(err);
                 toast.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
