@@ -6,7 +6,7 @@ import Header from "../components/Header";
 import Loading from "../components/Loading";
 
 const Container = styled.div`
-    width: calc(100%);
+    width: 100%;
     margin: 0;
     padding: 0;
     background-color: #0d1117;
@@ -42,46 +42,59 @@ const ButtonContainer = styled.div`
 
 const MoviesGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(7, 1fr); // 한 줄에 7개씩 배치
+    grid-template-columns: repeat(7, 1fr); /* 한 줄에 7개 */
     gap: 20px;
     justify-items: center;
     margin-bottom: 20px;
 `;
 
 const MovieCard = styled.div`
+    flex: 0 0 auto;
+    width: 200px;
     position: relative;
-    width: 100%;
-    max-width: 150px;
     cursor: pointer;
     transition: transform 0.3s;
 
     &:hover {
         transform: scale(1.05);
     }
+`;
 
-    img {
-        width: 100%;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
-    }
+const MovieImage = styled.img`
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+`;
 
-    p {
-        margin-top: 10px;
-        font-size: 0.9rem;
-        text-align: center;
-        color: white;
-    }
+const MovieOverlay = styled.div`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
 
-    div {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: rgba(0, 0, 0, 0.7);
-        color: gold;
-        border-radius: 50%;
-        padding: 5px;
-        font-size: 0.8rem;
+    ${MovieCard}:hover & {
+        opacity: 1;
     }
+`;
+
+const MovieTitle = styled.h4`
+    font-size: 16px;
+    margin: 0;
+`;
+
+const MovieInfo = styled.p`
+    font-size: 14px;
+    margin: 5px 0 0;
 `;
 
 const PaginationContainer = styled.div`
@@ -113,6 +126,7 @@ const PaginationContainer = styled.div`
     span {
         font-size: 1rem;
         margin: 0 10px;
+        color: white; /* 페이지 표시 글씨를 흰색으로 설정 */
     }
 `;
 
@@ -134,7 +148,6 @@ const TopButton = styled.button`
     }
 `;
 
-// Component
 const Popular = () => {
     const [movies, setMovies] = useState({
         table: [],
@@ -158,16 +171,21 @@ const Popular = () => {
         try {
             setLoading(true);
             const allMovies = [];
-            for (let page = 1; page <= 20; page++) {
+            let page = 1;
+
+            while (true) {
                 const response = await axios.get(
                     `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${page}`
                 );
+                if (response.data.results.length === 0) break; // 더 이상 데이터가 없으면 종료
                 response.data.results.forEach((movie) => {
                     if (!allMovies.some((m) => m.id === movie.id)) {
                         allMovies.push(movie);
                     }
                 });
+                page++;
             }
+
             setMovies((prev) => ({ ...prev, table: allMovies }));
             setLoading(false);
             toast.success("Table View 영화 데이터를 성공적으로 불러왔습니다!");
@@ -248,12 +266,15 @@ const Popular = () => {
     const renderMovies = (movies) =>
         movies.map((movie) => (
             <MovieCard key={movie.id} onClick={() => toggleWishlist(movie)}>
-                <img
+                <MovieImage
                     src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                     alt={movie.title}
                 />
-                <p>{movie.title}</p>
-                {wishlist.some((item) => item.id === movie.id) && <div>★</div>}
+                <MovieOverlay>
+                    <MovieTitle>{movie.title}</MovieTitle>
+                    <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
+                    <MovieInfo>{movie.release_date}</MovieInfo>
+                </MovieOverlay>
             </MovieCard>
         ));
 
