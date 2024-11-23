@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
@@ -81,20 +81,23 @@ const MovieInfo = styled.p`
     margin: 5px 0 0;
 `;
 
-const SliderButton = styled.button`
+const ArrowButton = styled.button`
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: rgba(0, 0, 0, 0.5);
+    background: none; /* 배경 제거 */
     color: white;
     border: none;
-    padding: 15px;
+    padding: 5px;
     cursor: pointer;
     z-index: 10;
-    transition: opacity 0.3s, background-color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
 
     &:hover {
-        background-color: rgba(0, 0, 0, 0.8);
+        color: #946efd; /* 마우스를 올리면 연보라색으로 변경 */
     }
 
     &:disabled {
@@ -103,12 +106,12 @@ const SliderButton = styled.button`
     }
 `;
 
-const LeftButton = styled(SliderButton)`
-    left: 0;
+const LeftButton = styled(ArrowButton)`
+    left: 20px;
 `;
 
-const RightButton = styled(SliderButton)`
-    right: 0;
+const RightButton = styled(ArrowButton)`
+    right: 20px;
 `;
 
 const Partition = ({ movies, title }) => {
@@ -151,7 +154,7 @@ const Partition = ({ movies, title }) => {
             <RowTitle>{title}</RowTitle>
             <SliderContainer>
                 <LeftButton onClick={handlePrev}>
-                    <FaChevronLeft />
+                    <FaChevronLeft size={20} />
                 </LeftButton>
                 <SliderWindow>
                     <MovieSlider
@@ -163,7 +166,7 @@ const Partition = ({ movies, title }) => {
                     </MovieSlider>
                 </SliderWindow>
                 <RightButton onClick={handleNext}>
-                    <FaChevronRight />
+                    <FaChevronRight size={20} />
                 </RightButton>
             </SliderContainer>
         </RowWrapper>
