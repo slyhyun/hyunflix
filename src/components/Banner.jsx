@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Loading from "./Loading";
 
 const BannerWrapper = styled.div`
@@ -11,6 +12,7 @@ const BannerWrapper = styled.div`
     display: flex;
     align-items: flex-end;
     margin-top: 50px;
+    position: relative; /* 화살표 버튼을 배치하기 위해 position 설정 */
 `;
 
 const BannerContent = styled.div`
@@ -64,6 +66,35 @@ const Button = styled.button`
     }
 `;
 
+const ArrowButton = styled.button`
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+`;
+
+const LeftArrow = styled(ArrowButton)`
+    left: 20px;
+`;
+
+const RightArrow = styled(ArrowButton)`
+    right: 20px;
+`;
+
 const Banner = ({ movies }) => {
     const [selectedMovieIndex, setSelectedMovieIndex] = useState(0);
 
@@ -77,6 +108,16 @@ const Banner = ({ movies }) => {
         return () => clearInterval(interval);
     }, [movies]);
 
+    const handlePrev = () => {
+        setSelectedMovieIndex((prevIndex) =>
+            prevIndex === 0 ? movies.length - 1 : prevIndex - 1
+        );
+    };
+
+    const handleNext = () => {
+        setSelectedMovieIndex((prevIndex) => (prevIndex + 1) % movies.length);
+    };
+
     if (movies.length === 0) {
         return <Loading />;
     }
@@ -86,6 +127,12 @@ const Banner = ({ movies }) => {
 
     return (
         <BannerWrapper style={{ backgroundImage: `url(${backgroundImage})` }}>
+            <LeftArrow onClick={handlePrev}>
+                <FaChevronLeft size={20} />
+            </LeftArrow>
+            <RightArrow onClick={handleNext}>
+                <FaChevronRight size={20} />
+            </RightArrow>
             <BannerContent>
                 <BannerTitle>{selectedMovie?.title || "제목 없음"}</BannerTitle>
                 <BannerDescription>{selectedMovie?.overview || "설명이 없습니다."}</BannerDescription>
