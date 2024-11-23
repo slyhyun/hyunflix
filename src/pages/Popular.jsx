@@ -101,6 +101,7 @@ const PaginationContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 20px;
 
     button {
         background-color: #2f2f2f;
@@ -125,10 +126,10 @@ const PaginationContainer = styled.div`
 
     span {
         font-size: 1rem;
-        margin: 0 10px;
-        color: white; /* 페이지 표시 글씨를 흰색으로 설정 */
+        color: white; /* 페이지 번호 텍스트 색상 흰색 */
     }
 `;
+
 
 const TopButton = styled.button`
     position: fixed;
@@ -160,6 +161,7 @@ const Popular = () => {
         JSON.parse(localStorage.getItem("wishlist")) || []
     );
     const [showTopButton, setShowTopButton] = useState(false);
+    const [toastShown, setToastShown] = useState({ table: false, infinite: false });
 
     const fetchMoviesForTable = async () => {
         const password = localStorage.getItem("password");
@@ -171,7 +173,7 @@ const Popular = () => {
         try {
             setLoading(true);
             const allMovies = [];
-            for (let page = 1; page <= 50; page++) { // 최대 50페이지까지만 가져옴
+            for (let page = 1; page <= 50; page++) {
                 const response = await axios.get(
                     `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${page}`
                 );
@@ -183,7 +185,11 @@ const Popular = () => {
             }
             setMovies((prev) => ({ ...prev, table: allMovies }));
             setLoading(false);
-            toast.success("Table View 영화 데이터를 성공적으로 불러왔습니다!");
+
+            if (!toastShown.table) {
+                toast.success("Table View 영화 데이터를 성공적으로 불러왔습니다!");
+                setToastShown((prev) => ({ ...prev, table: true }));
+            }
         } catch (error) {
             console.error(error);
             toast.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
@@ -199,7 +205,6 @@ const Popular = () => {
         }
 
         try {
-            setLoading(true);
             const response = await axios.get(
                 `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${page}`
             );
@@ -207,12 +212,14 @@ const Popular = () => {
                 ...prev,
                 scroll: [...prev.scroll, ...response.data.results],
             }));
-            setLoading(false);
-            toast.success("Infinite Scroll 영화 데이터를 성공적으로 불러왔습니다!");
+
+            if (!toastShown.infinite && page === 1) {
+                toast.success("Infinite Scroll 영화 데이터를 성공적으로 불러왔습니다!");
+                setToastShown((prev) => ({ ...prev, infinite: true }));
+            }
         } catch (error) {
             console.error(error);
             toast.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
-            setLoading(false);
         }
     };
 
