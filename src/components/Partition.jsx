@@ -10,8 +10,7 @@ const RowWrapper = styled.div`
 `;
 
 const RowTitle = styled.h2`
-    text-align: left;
-    margin-left: 30px;
+    text-align: center;
     color: white;
 `;
 
