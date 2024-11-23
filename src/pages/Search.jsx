@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
@@ -104,6 +103,14 @@ const MovieInfo = styled.p`
     margin: 5px 0 0;
 `;
 
+const WishlistIndicator = styled.div`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    color: gold;
+`;
+
 const TopButton = styled.button`
     position: fixed;
     bottom: 50px;
@@ -139,7 +146,7 @@ const Search = () => {
 
     const fetchFilteredMovies = async (reset = false) => {
         if (!API_KEY) {
-            toast.error("API Key가 필요합니다. 로그인 후 다시 시도해 주세요.");
+            console.error("API Key가 필요합니다.");
             return;
         }
 
@@ -169,18 +176,15 @@ const Search = () => {
             setLoading(false);
         } catch (error) {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
-            toast.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
             setLoading(false);
         }
     };
 
-    // 필터 변경 시 페이지와 영화 데이터 초기화 후 다시 요청
     useEffect(() => {
         setCurrentPage(1);
         fetchFilteredMovies(true);
     }, [filters]);
 
-    // 페이지 변경 시 영화 데이터 추가 요청
     useEffect(() => {
         if (currentPage > 1) {
             fetchFilteredMovies();
@@ -218,11 +222,6 @@ const Search = () => {
 
         setWishlist(updatedWishlist);
         localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-        toast.success(
-            wishlist.some((item) => item.id === movie.id)
-                ? "위시리스트에서 제거되었습니다."
-                : "위시리스트에 추가되었습니다."
-        );
     };
 
     useEffect(() => {
@@ -232,7 +231,6 @@ const Search = () => {
 
     return (
         <Container>
-            <Toaster />
             <Header />
             <FiltersContainer>
                 <input
@@ -275,20 +273,23 @@ const Search = () => {
                 <button onClick={resetFilters}>필터 초기화</button>
             </FiltersContainer>
             <MoviesGrid>
-                {movies.map((movie) => (
-                    <MovieCard key={movie.id}>
-                        <MovieImage
-                            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                            alt={movie.title}
-                            onClick={() => toggleWishlist(movie)}
-                        />
-                        <MovieOverlay>
-                            <MovieTitle>{movie.title}</MovieTitle>
-                            <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
-                            <MovieInfo>{movie.release_date}</MovieInfo>
-                        </MovieOverlay>
-                    </MovieCard>
-                ))}
+                {movies.map((movie) => {
+                    const isWishlisted = wishlist.some((item) => item.id === movie.id);
+                    return (
+                        <MovieCard key={movie.id} onClick={() => toggleWishlist(movie)}>
+                            <MovieImage
+                                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                alt={movie.title}
+                            />
+                            <MovieOverlay>
+                                <MovieTitle>{movie.title}</MovieTitle>
+                                <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
+                                <MovieInfo>{movie.release_date}</MovieInfo>
+                            </MovieOverlay>
+                            {isWishlisted && <WishlistIndicator>⭐</WishlistIndicator>}
+                        </MovieCard>
+                    );
+                })}
             </MoviesGrid>
             {loading && <Loading />}
             {showTopButton && (
