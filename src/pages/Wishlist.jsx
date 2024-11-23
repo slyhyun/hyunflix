@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
 import styled from "styled-components";
 import Header from "../components/Header";
 
@@ -12,8 +11,9 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-top: 120px;
-    padding-bottom: 120px;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    min-height: 80vh;
 `;
 
 const MoviesGrid = styled.div`
@@ -71,26 +71,27 @@ const MovieInfo = styled.p`
     margin: 5px 0 0;
 `;
 
+const WishlistIndicator = styled.div`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    color: gold;
+`;
+
 const Wishlist = () => {
     const [state, setState] = useState({
         wishlist: [],
         filteredMovies: [],
-        searchTerm: "",
-        recentSearches: [],
         itemsPerPage: 20,
     });
 
-    const [loading, setLoading] = useState(false);
-
     useEffect(() => {
         const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-        const storedSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
-
         setState((prev) => ({
             ...prev,
             wishlist: storedWishlist,
             filteredMovies: storedWishlist.slice(0, prev.itemsPerPage),
-            recentSearches: storedSearches.slice(0, 3),
         }));
     }, []);
 
@@ -98,7 +99,6 @@ const Wishlist = () => {
         const handleScroll = () => {
             if (
                 window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
-                !loading &&
                 state.filteredMovies.length < state.wishlist.length
             ) {
                 loadMoreMovies();
@@ -107,23 +107,19 @@ const Wishlist = () => {
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [state.filteredMovies, state.wishlist, loading]);
+    }, [state.filteredMovies, state.wishlist]);
 
     const loadMoreMovies = () => {
-        setLoading(true);
-        setTimeout(() => {
-            setState((prev) => ({
-                ...prev,
-                filteredMovies: [
-                    ...prev.filteredMovies,
-                    ...prev.wishlist.slice(
-                        prev.filteredMovies.length,
-                        prev.filteredMovies.length + prev.itemsPerPage
-                    ),
-                ],
-            }));
-            setLoading(false);
-        }, 500);
+        setState((prev) => ({
+            ...prev,
+            filteredMovies: [
+                ...prev.filteredMovies,
+                ...prev.wishlist.slice(
+                    prev.filteredMovies.length,
+                    prev.filteredMovies.length + prev.itemsPerPage
+                ),
+            ],
+        }));
     };
 
     const handleRemoveFromWishlist = (movieId) => {
@@ -134,67 +130,11 @@ const Wishlist = () => {
             filteredMovies: updatedWishlist.slice(0, prev.filteredMovies.length),
         }));
         localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-        toast.success("영화를 위시리스트에서 제거했습니다.");
-    };
-
-    const handleSearch = () => {
-        const { wishlist, searchTerm, recentSearches } = state;
-        if (!searchTerm.trim()) {
-            toast.error("검색어를 입력하세요.");
-            return;
-        }
-
-        const filtered = wishlist.filter((movie) =>
-            movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-        setState((prev) => ({
-            ...prev,
-            filteredMovies: filtered.slice(0, prev.itemsPerPage),
-            searchTerm: searchTerm.trim(),
-        }));
-
-        if (!recentSearches.includes(searchTerm)) {
-            const updatedSearches = [searchTerm, ...recentSearches.slice(0, 2)];
-            setState((prev) => ({ ...prev, recentSearches: updatedSearches }));
-            localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
-        }
-    };
-
-    const handleRecentSearchClick = (term) => {
-        setState((prev) => ({ ...prev, searchTerm: term }));
-        handleSearch();
-    };
-
-    const handleRemoveRecentSearch = (term) => {
-        const updatedSearches = state.recentSearches.filter((item) => item !== term);
-        setState((prev) => ({ ...prev, recentSearches: updatedSearches }));
-        localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
     };
 
     return (
         <Container>
-            <Toaster />
             <Header />
-            <div>
-                <input
-                    type="text"
-                    placeholder="영화 제목 검색"
-                    value={state.searchTerm}
-                    onChange={(e) =>
-                        setState((prev) => ({ ...prev, searchTerm: e.target.value }))
-                    }
-                />
-                <button onClick={handleSearch}>검색</button>
-                <div>
-                    {state.recentSearches.map((term, index) => (
-                        <div key={index}>
-                            <span onClick={() => handleRecentSearchClick(term)}>{term}</span>
-                            <button onClick={() => handleRemoveRecentSearch(term)}>X</button>
-                        </div>
-                    ))}
-                </div>
-            </div>
             <MoviesGrid>
                 {state.filteredMovies.map((movie) => (
                     <MovieCard key={movie.id} onClick={() => handleRemoveFromWishlist(movie.id)}>
@@ -207,10 +147,10 @@ const Wishlist = () => {
                             <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
                             <MovieInfo>{movie.release_date}</MovieInfo>
                         </MovieOverlay>
+                        <WishlistIndicator>⭐</WishlistIndicator>
                     </MovieCard>
                 ))}
             </MoviesGrid>
-            {loading && <p>로딩 중...</p>}
         </Container>
     );
 };
