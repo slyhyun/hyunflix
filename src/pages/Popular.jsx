@@ -130,7 +130,6 @@ const PaginationContainer = styled.div`
     }
 `;
 
-
 const TopButton = styled.button`
     position: fixed;
     bottom: 50px;
@@ -155,7 +154,7 @@ const Popular = () => {
         scroll: [],
     });
     const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [tablePage, setTablePage] = useState(1);
     const [view, setView] = useState("table");
     const [wishlist, setWishlist] = useState(
         JSON.parse(localStorage.getItem("wishlist")) || []
@@ -177,11 +176,7 @@ const Popular = () => {
                 const response = await axios.get(
                     `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${page}`
                 );
-                response.data.results.forEach((movie) => {
-                    if (!allMovies.some((m) => m.id === movie.id)) {
-                        allMovies.push(movie);
-                    }
-                });
+                allMovies.push(...response.data.results);
             }
             setMovies((prev) => ({ ...prev, table: allMovies }));
             setLoading(false);
@@ -197,7 +192,7 @@ const Popular = () => {
         }
     };
 
-    const fetchMoviesForScroll = async (page) => {
+    const fetchMoviesForScroll = async () => {
         const password = localStorage.getItem("password");
         if (!password) {
             toast.error("로그인이 필요합니다. 로그인 후 다시 시도해 주세요.");
@@ -206,14 +201,14 @@ const Popular = () => {
 
         try {
             const response = await axios.get(
-                `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${page}`
+                `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${scrollPage}`
             );
             setMovies((prev) => ({
                 ...prev,
                 scroll: [...prev.scroll, ...response.data.results],
             }));
 
-            if (!toastShown.infinite && page === 1) {
+            if (!toastShown.infinite && scrollPage === 1) {
                 toast.success("Infinite Scroll 영화 데이터를 성공적으로 불러왔습니다!");
                 setToastShown((prev) => ({ ...prev, infinite: true }));
             }
@@ -226,10 +221,16 @@ const Popular = () => {
     useEffect(() => {
         if (view === "table") {
             fetchMoviesForTable();
-        } else if (view === "infinite") {
-            fetchMoviesForScroll(currentPage);
+        } else if (view === "infinite" && scrollPage === 1) {
+            fetchMoviesForScroll();
         }
-    }, [view, currentPage]);
+    }, [view]);
+
+    useEffect(() => {
+        if (view === "infinite" && scrollPage > 1) {
+            fetchMoviesForScroll();
+        }
+    }, [scrollPage]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -238,7 +239,7 @@ const Popular = () => {
                 window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 &&
                 !loading
             ) {
-                setCurrentPage((prev) => prev + 1);
+                setScrollPage((prev) => prev + 1);
             }
             setShowTopButton(window.scrollY > 300);
         };
@@ -280,10 +281,9 @@ const Popular = () => {
             </MovieCard>
         ));
 
-    const currentMovies = movies.table.slice(
-        (currentPage - 1) * 14,
-        currentPage * 14
-    );
+    const currentMovies = React.useMemo(() => {
+        return movies.table.slice((tablePage - 1) * 14, tablePage * 14);
+    }, [movies.table, tablePage]);
 
     return (
         <>
@@ -302,17 +302,17 @@ const Popular = () => {
                         <MoviesGrid>{renderMovies(currentMovies)}</MoviesGrid>
                         <PaginationContainer>
                             <button
-                                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-                                disabled={currentPage === 1}
+                                onClick={() => setTablePage((prev) => Math.max(1, prev - 1))}
+                                disabled={tablePage === 1}
                             >
                                 이전
                             </button>
                             <span>
-                                {currentPage} / {Math.ceil(movies.table.length / 14)}
+                                {tablePage} / {Math.ceil(movies.table.length / 14)}
                             </span>
                             <button
                                 onClick={() =>
-                                    setCurrentPage((prev) =>
+                                    setTablePage((prev) =>
                                         Math.min(
                                             Math.ceil(movies.table.length / 14),
                                             prev + 1
@@ -320,7 +320,7 @@ const Popular = () => {
                                     )
                                 }
                                 disabled={
-                                    currentPage === Math.ceil(movies.table.length / 14)
+                                    tablePage === Math.ceil(movies.table.length / 14)
                                 }
                             >
                                 다음
