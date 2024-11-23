@@ -155,6 +155,7 @@ const Popular = () => {
     });
     const [loading, setLoading] = useState(true);
     const [tablePage, setTablePage] = useState(1);
+    const [scrollPage, setScrollPage] = useState(1); // 스크롤 페이지 상태 추가
     const [view, setView] = useState("table");
     const [wishlist, setWishlist] = useState(
         JSON.parse(localStorage.getItem("wishlist")) || []
