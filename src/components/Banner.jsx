@@ -25,7 +25,6 @@ const BannerItem = styled.div`
     display: flex;
     align-items: flex-end;
     position: relative;
-    background-image: url(https://image.tmdb.org/t/p/w1280${movie?.backdrop_path || ""});
 `;
 
 
@@ -157,7 +156,7 @@ const Banner = ({ movies }) => {
                     <BannerItem
                         key={index}
                         style={{
-                            backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie?.backdrop_path || ""})`,
+                            backgroundImage: `url(https://image.tmdb.org/t/p/original${movie?.backdrop_path || ""})`,
                         }}
                     >
                         <BannerContent>
