@@ -30,6 +30,34 @@ const MovieSlider = styled.div`
     padding: 20px 0;
 `;
 
+const MovieCard = styled.div`
+    flex: 0 0 auto;
+    width: 200px;
+    margin-right: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+
+    .wishlist-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        color: #946efd; /* 연보라색 아이콘 */
+        display: ${(props) => (props.isWishlisted ? "block" : "none")};
+    }
+`;
+
+const MovieImage = styled.img`
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+`;
+
 const MovieOverlay = styled.div`
     position: absolute;
     bottom: 0;
@@ -45,29 +73,10 @@ const MovieOverlay = styled.div`
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
-`;
 
-const MovieCard = styled.div`
-    flex: 0 0 auto;
-    width: 200px;
-    margin-right: 10px;
-    position: relative;
-    cursor: pointer;
-    transition: transform 0.3s;
-
-    &:hover {
-        transform: scale(1.05);
-    }
-
-    &:hover ${MovieOverlay} {
+    ${MovieCard}:hover & {
         opacity: 1;
     }
-`;
-
-const MovieImage = styled.img`
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
 `;
 
 const MovieTitle = styled.h4`
@@ -115,6 +124,10 @@ const RightButton = styled(ArrowButton)`
 
 const Partition = ({ movies, title }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [wishlist, setWishlist] = useState(
+        JSON.parse(localStorage.getItem("wishlist")) || []
+    );
+
     const itemsToShow = 5; // 화면에 표시되는 영화 개수
     const cardWidth = 210; // 카드 폭 (200px + 간격 10px)
 
@@ -132,9 +145,23 @@ const Partition = ({ movies, title }) => {
         });
     };
 
+    const toggleWishlist = (movie) => {
+        const exists = wishlist.some((item) => item.id === movie.id);
+        const updatedWishlist = exists
+            ? wishlist.filter((item) => item.id !== movie.id)
+            : [...wishlist, movie];
+
+        setWishlist(updatedWishlist);
+        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+    };
+
     const renderMovies = () => {
         return movies.map((movie) => (
-            <MovieCard key={movie.id}>
+            <MovieCard
+                key={movie.id}
+                isWishlisted={wishlist.some((item) => item.id === movie.id)}
+                onClick={() => toggleWishlist(movie)}
+            >
                 <MovieImage
                     src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                     alt={movie.title}
@@ -144,6 +171,7 @@ const Partition = ({ movies, title }) => {
                     <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
                     <MovieInfo>{movie.release_date}</MovieInfo>
                 </MovieOverlay>
+                <div className="wishlist-icon">⭐</div>
             </MovieCard>
         ));
     };
@@ -158,7 +186,9 @@ const Partition = ({ movies, title }) => {
                 <SliderWindow>
                     <MovieSlider
                         style={{
-                            transform: `translateX(-${currentIndex * itemsToShow * cardWidth}px)`, // 이동량 계산
+                            transform: `translateX(-${
+                                currentIndex * itemsToShow * cardWidth
+                            }px)`, // 이동량 계산
                         }}
                     >
                         {renderMovies()}
