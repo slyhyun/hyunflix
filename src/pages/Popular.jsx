@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
@@ -97,6 +96,14 @@ const MovieInfo = styled.p`
     margin: 5px 0 0;
 `;
 
+const WishlistIndicator = styled.div`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    color: gold;
+`;
+
 const PaginationContainer = styled.div`
     display: flex;
     justify-content: center;
@@ -161,12 +168,11 @@ const Popular = () => {
         JSON.parse(localStorage.getItem("wishlist")) || []
     );
     const [showTopButton, setShowTopButton] = useState(false);
-    const [toastShown, setToastShown] = useState({ table: false, infinite: false });
 
     const fetchMoviesForTable = async () => {
         const password = localStorage.getItem("password");
         if (!password) {
-            toast.error("로그인이 필요합니다. 로그인 후 다시 시도해 주세요.");
+            console.error("로그인이 필요합니다.");
             return;
         }
 
@@ -177,18 +183,17 @@ const Popular = () => {
                 const response = await axios.get(
                     `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${page}`
                 );
-                allMovies.push(...response.data.results);
+                allMovies.push(
+                    ...response.data.results.map((movie, index) => ({
+                        ...movie,
+                        _uniqueId: `${movie.id}-${index}`,
+                    }))
+                );
             }
             setMovies((prev) => ({ ...prev, table: allMovies }));
             setLoading(false);
-
-            if (!toastShown.table) {
-                toast.success("Table View 영화 데이터를 성공적으로 불러왔습니다!");
-                setToastShown((prev) => ({ ...prev, table: true }));
-            }
         } catch (error) {
-            console.error(error);
-            toast.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
+            console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
             setLoading(false);
         }
     };
@@ -196,7 +201,7 @@ const Popular = () => {
     const fetchMoviesForScroll = async () => {
         const password = localStorage.getItem("password");
         if (!password) {
-            toast.error("로그인이 필요합니다. 로그인 후 다시 시도해 주세요.");
+            console.error("로그인이 필요합니다.");
             return;
         }
 
@@ -208,14 +213,8 @@ const Popular = () => {
                 ...prev,
                 scroll: [...prev.scroll, ...response.data.results],
             }));
-
-            if (!toastShown.infinite && scrollPage === 1) {
-                toast.success("Infinite Scroll 영화 데이터를 성공적으로 불러왔습니다!");
-                setToastShown((prev) => ({ ...prev, infinite: true }));
-            }
         } catch (error) {
-            console.error(error);
-            toast.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
+            console.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
         }
     };
 
@@ -258,9 +257,6 @@ const Popular = () => {
             : [...wishlist, movie];
         setWishlist(updatedWishlist);
         localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-        toast.success(
-            exists ? "추천 영화에서 제거되었습니다." : "추천 영화에 추가되었습니다."
-        );
     };
 
     const scrollToTop = () => {
@@ -268,19 +264,23 @@ const Popular = () => {
     };
 
     const renderMovies = (movies) =>
-        movies.map((movie) => (
-            <MovieCard key={movie.id} onClick={() => toggleWishlist(movie)}>
-                <MovieImage
-                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                    alt={movie.title}
-                />
-                <MovieOverlay>
-                    <MovieTitle>{movie.title}</MovieTitle>
-                    <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
-                    <MovieInfo>{movie.release_date}</MovieInfo>
-                </MovieOverlay>
-            </MovieCard>
-        ));
+        movies.map((movie) => {
+            const isWishlisted = wishlist.some((item) => item.id === movie.id);
+            return (
+                <MovieCard key={movie._uniqueId} onClick={() => toggleWishlist(movie)}>
+                    <MovieImage
+                        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                        alt={movie.title}
+                    />
+                    <MovieOverlay>
+                        <MovieTitle>{movie.title}</MovieTitle>
+                        <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
+                        <MovieInfo>{movie.release_date}</MovieInfo>
+                    </MovieOverlay>
+                    {isWishlisted && <WishlistIndicator>⭐</WishlistIndicator>}
+                </MovieCard>
+            );
+        });
 
     const currentMovies = React.useMemo(() => {
         return movies.table.slice((tablePage - 1) * 14, tablePage * 14);
@@ -288,7 +288,6 @@ const Popular = () => {
 
     return (
         <>
-            <Toaster />
             <Header />
             <Container>
                 <ButtonContainer>
