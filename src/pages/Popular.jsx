@@ -171,21 +171,16 @@ const Popular = () => {
         try {
             setLoading(true);
             const allMovies = [];
-            let page = 1;
-
-            while (true) {
+            for (let page = 1; page <= 50; page++) { // 최대 50페이지까지만 가져옴
                 const response = await axios.get(
                     `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${page}`
                 );
-                if (response.data.results.length === 0) break; // 더 이상 데이터가 없으면 종료
                 response.data.results.forEach((movie) => {
                     if (!allMovies.some((m) => m.id === movie.id)) {
                         allMovies.push(movie);
                     }
                 });
-                page++;
             }
-
             setMovies((prev) => ({ ...prev, table: allMovies }));
             setLoading(false);
             toast.success("Table View 영화 데이터를 성공적으로 불러왔습니다!");
