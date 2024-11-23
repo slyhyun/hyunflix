@@ -13,8 +13,9 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-top: 120px;
-    padding-bottom: 120px;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    min-height: 80vh;
 `;
 
 const FiltersContainer = styled.div`
