@@ -1,15 +1,133 @@
 import React, { useEffect, useState } from "react";
+import styled from "styled-components";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
+
+const Container = styled.div`
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #0d1117;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 120px;
+    padding-bottom: 120px;
+`;
+
+const FiltersContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    input,
+    select,
+    button {
+        background-color: #2f2f2f;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        font-size: 1rem;
+        margin: 0 10px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: color 0.3s, background-color 0.3s;
+
+        &:hover {
+            color: #946efd;
+        }
+
+        &::placeholder {
+            color: #aaa;
+        }
+    }
+`;
+
+const MoviesGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 20px;
+    justify-items: center;
+    margin-bottom: 20px;
+`;
+
+const MovieCard = styled.div`
+    flex: 0 0 auto;
+    width: 200px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+`;
+
+const MovieImage = styled.img`
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+`;
+
+const MovieOverlay = styled.div`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+
+    ${MovieCard}:hover & {
+        opacity: 1;
+    }
+`;
+
+const MovieTitle = styled.h4`
+    font-size: 16px;
+    margin: 0;
+`;
+
+const MovieInfo = styled.p`
+    font-size: 14px;
+    margin: 5px 0 0;
+`;
+
+const TopButton = styled.button`
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    background-color: #2f2f2f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+        color: #946efd;
+    }
+`;
 
 const Search = () => {
     const [filters, setFilters] = useState({
         genre: "all",
         minRating: "all",
         sortBy: "popularity.desc",
-        query: "", // 검색어 필드 추가
+        query: "",
     });
     const [movies, setMovies] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -17,10 +135,9 @@ const Search = () => {
     const [showTopButton, setShowTopButton] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // API Key 가져오기
     const API_KEY = localStorage.getItem("password");
 
-    const fetchFilteredMovies = async () => {
+    const fetchFilteredMovies = async (reset = false) => {
         if (!API_KEY) {
             toast.error("API Key가 필요합니다. 로그인 후 다시 시도해 주세요.");
             return;
@@ -37,7 +154,6 @@ const Search = () => {
             const sortFilter = sortBy ? `&sort_by=${sortBy}` : "";
             const queryFilter = query ? `&query=${encodeURIComponent(query)}` : "";
 
-            // 검색어가 있으면 search API 사용, 없으면 discover API 사용
             const apiEndpoint = query
                 ? `https://api.themoviedb.org/3/search/movie`
                 : `https://api.themoviedb.org/3/discover/movie`;
@@ -46,14 +162,11 @@ const Search = () => {
                 `${apiEndpoint}?api_key=${API_KEY}&language=ko-KR&page=${currentPage}${genreFilter}${ratingFilter}${sortFilter}${queryFilter}`
             );
 
-            if (currentPage === 1) {
-                setMovies(response.data.results);
-            } else {
-                setMovies((prevMovies) => [...prevMovies, ...response.data.results]);
-            }
+            setMovies((prevMovies) =>
+                reset ? response.data.results : [...prevMovies, ...response.data.results]
+            );
 
             setLoading(false);
-            toast.success("영화 데이터를 성공적으로 불러왔습니다!");
         } catch (error) {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
             toast.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
@@ -61,14 +174,24 @@ const Search = () => {
         }
     };
 
-    // 필터나 페이지 변경 시 영화 데이터 요청
+    // 필터 변경 시 페이지와 영화 데이터 초기화 후 다시 요청
     useEffect(() => {
-        fetchFilteredMovies();
-    }, [filters, currentPage]);
+        setCurrentPage(1);
+        fetchFilteredMovies(true);
+    }, [filters]);
 
-    // 스크롤 로드 및 Top 버튼 처리
+    // 페이지 변경 시 영화 데이터 추가 요청
+    useEffect(() => {
+        if (currentPage > 1) {
+            fetchFilteredMovies();
+        }
+    }, [currentPage]);
+
     const handleScroll = () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !loading) {
+        if (
+            window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
+            !loading
+        ) {
             setCurrentPage((prevPage) => prevPage + 1);
         }
         setShowTopButton(window.scrollY > 300);
@@ -79,7 +202,6 @@ const Search = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, [loading]);
 
-    // 필터 초기화
     const resetFilters = () => {
         setFilters({
             genre: "all",
@@ -87,11 +209,8 @@ const Search = () => {
             sortBy: "popularity.desc",
             query: "",
         });
-        setCurrentPage(1);
-        setMovies([]);
     };
 
-    // 위시리스트 추가/제거
     const toggleWishlist = (movie) => {
         const updatedWishlist = wishlist.some((item) => item.id === movie.id)
             ? wishlist.filter((item) => item.id !== movie.id)
@@ -112,10 +231,10 @@ const Search = () => {
     }, []);
 
     return (
-        <>
+        <Container>
             <Toaster />
             <Header />
-            <div className="filter-container">
+            <FiltersContainer>
                 <input
                     type="text"
                     placeholder="영화 제목 검색"
@@ -154,26 +273,30 @@ const Search = () => {
                     <option value="vote_average.desc">평점 높은 순</option>
                 </select>
                 <button onClick={resetFilters}>필터 초기화</button>
-            </div>
-            <div className="movies-container">
+            </FiltersContainer>
+            <MoviesGrid>
                 {movies.map((movie) => (
-                    <div key={movie.id} className="movie-card">
-                        <img
+                    <MovieCard key={movie.id}>
+                        <MovieImage
                             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                             alt={movie.title}
                             onClick={() => toggleWishlist(movie)}
                         />
-                        <h3>{movie.title}</h3>
-                    </div>
+                        <MovieOverlay>
+                            <MovieTitle>{movie.title}</MovieTitle>
+                            <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
+                            <MovieInfo>{movie.release_date}</MovieInfo>
+                        </MovieOverlay>
+                    </MovieCard>
                 ))}
-            </div>
+            </MoviesGrid>
             {loading && <Loading />}
             {showTopButton && (
-                <button className="top-button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+                <TopButton onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
                     Top
-                </button>
+                </TopButton>
             )}
-        </>
+        </Container>
     );
 };
 
