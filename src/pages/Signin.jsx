@@ -81,11 +81,11 @@ const Form = styled.form`
     &::after {
       content: '';
       position: absolute;
-      top: 2px;
-      left: 5px;
-      width: 6px;
+      top: 0px;
+      left: 4px;
+      width: 5px;
       height: 10px;
-      border: solid #946efd;
+      border: solid #ccc;
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
       display: none;
