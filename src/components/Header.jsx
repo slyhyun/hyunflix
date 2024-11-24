@@ -25,7 +25,7 @@ const Logo = styled.div`
     display: flex;
     align-items: center;
     cursor: pointer;
-
+    transition: background-color 0.3s, color 0.3s;
     .movie-icon {
         font-size: 24px;
         margin-right: 10px;
@@ -47,7 +47,7 @@ const Nav = styled.nav`
 
     p {
         cursor: pointer;
-
+        transition: background-color 0.3s, color 0.3s;
         &:hover {
             color: #946efd;
         }
@@ -66,6 +66,7 @@ const LogoutButton = styled.div`
     align-items: center;
     cursor: pointer;
     color: white;
+    transition: background-color 0.3s, color 0.3s;
     &:hover {
         color: red;
     }
@@ -116,8 +117,6 @@ const Header = () => {
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('username');
-        localStorage.removeItem('password');
         setUsername('');
         navigate('/signin');
     };
