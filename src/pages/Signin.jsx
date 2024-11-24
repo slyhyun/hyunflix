@@ -240,6 +240,10 @@ const Signin = () => {
       toast.error('이메일 주소가 유효하지 않습니다.');
       return;
     }
+    if (!formData.password) {
+      toast.error('비밀번호를 입력하지 않았습니다.');
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       toast.error('비밀번호가 일치하지 않습니다.');
       return;
