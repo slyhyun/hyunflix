@@ -9,18 +9,18 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #ebecf0;
+  background: #0d1117;
   overflow: hidden;
 `;
 
 const Container = styled.div`
   border-radius: 10px;
-  box-shadow: -5px -5px 10px #fff, 5px 5px 10px #babebc;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
   position: relative;
   width: 768px;
   min-height: 480px;
   overflow: hidden;
-  background: #ebecf0;
+  background: #161b22;
   ${({ isSignUp }) =>
     isSignUp &&
     css`
@@ -56,14 +56,16 @@ const Form = styled.form`
   input[type='text'],
   input[type='email'],
   input[type='password'] {
-    background: #eee;
+    background: #21262d;
+    color: #c9d1d9;
     padding: 16px;
     margin: 8px 0;
     width: 85%;
     border: 0;
     outline: none;
     border-radius: 20px;
-    box-shadow: inset 7px 2px 10px #babebc, inset -5px -5px 12px #fff;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
+      inset -2px -2px 5px rgba(255, 255, 255, 0.1);
   }
 
   input[type='checkbox'] {
@@ -74,11 +76,30 @@ const Form = styled.form`
     appearance: none;
     outline: none;
     cursor: pointer;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 5px;
+      width: 6px;
+      height: 10px;
+      border: solid #946efd;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      display: none;
+    }
+
+    &:checked::after {
+      display: block;
+    }
   }
 
-  input[type='checkbox']:checked {
-    background-color: #ff4b2b;
-    border: none;
+  label {
+    color: #ffffff; /* 체크박스 문구 흰색 */
+    display: flex;
+    align-items: center;
   }
 
   button {
@@ -92,18 +113,19 @@ const Form = styled.form`
     text-transform: uppercase;
     cursor: pointer;
     transition: transform 80ms ease-in;
-    background: #ff4b2b;
+    background: #946efd;
     color: white;
-    box-shadow: -5px -5px 10px #ff6b3f, 5px 5px 8px #bf4b2b;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
 
     &:active {
-      box-shadow: inset 1px 1px 2px #babebc, inset -1px -1px 2px #fff;
+      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.1);
     }
   }
 
   h2 {
     margin: 0 0 20px;
-    color: #000;
+    color: #c9d1d9;
     font-weight: bold;
   }
 
@@ -111,10 +133,11 @@ const Form = styled.form`
     font-size: 16px;
     font-weight: bold;
     margin: 20px 0 30px;
+    color: #c9d1d9;
 
     span {
       cursor: pointer;
-      color: #ff4b2b;
+      color: #946efd;
       &:hover {
         text-decoration: underline;
       }
@@ -128,7 +151,7 @@ const OverlayContainer = styled.div`
   right: 0;
   width: 50%;
   height: 100%;
-  background-color: #ff4b2b;
+  background-color: #946efd;
   color: white;
   display: flex;
   flex-direction: column;
@@ -171,7 +194,7 @@ const OverlayText = styled.div`
 `;
 
 const Signin = () => {
-  const [isLoginMode, setIsLoginMode] = useState(true); // 로그인/회원가입 전환 상태
+  const [isLoginMode, setIsLoginMode] = useState(true);
   const [formData, setFormData] = useState({
     loginEmail: '',
     loginPassword: '',
