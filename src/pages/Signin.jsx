@@ -264,6 +264,15 @@ const Signin = () => {
 
     if (formData.loginEmail === storedEmail && formData.loginPassword === storedPassword) {
       toast.success('로그인 성공!');
+      if (formData.rememberMe) {
+        localStorage.setItem('loginEmail', formData.loginEmail);
+        localStorage.setItem('loginPassword', formData.loginPassword);
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('loginEmail');
+        localStorage.removeItem('loginPassword');
+        localStorage.removeItem('rememberMe');
+      }
       navigate('/');
     } else {
       toast.error('아이디 또는 비밀번호가 잘못되었습니다.');
@@ -273,10 +282,13 @@ const Signin = () => {
   useEffect(() => {
     const savedEmail = localStorage.getItem('loginEmail');
     const savedPassword = localStorage.getItem('loginPassword');
+    const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+
     setFormData((prev) => ({
       ...prev,
       loginEmail: savedEmail || '',
       loginPassword: savedPassword || '',
+      rememberMe: savedRememberMe,
     }));
   }, []);
 
