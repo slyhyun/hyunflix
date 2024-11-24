@@ -128,7 +128,7 @@ const Partition = ({ movies, title }) => {
         JSON.parse(localStorage.getItem("wishlist")) || []
     );
 
-    const itemsToShow = 5; // 화면에 표시되는 영화 개수
+    const itemsToShow = 7; // 화면에 표시되는 영화 개수
     const cardWidth = 210; // 카드 폭 (200px + 간격 10px)
 
     const handleNext = () => {
