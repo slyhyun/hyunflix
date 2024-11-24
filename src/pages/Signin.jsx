@@ -33,15 +33,6 @@ const Container = styled.div`
         opacity: 1;
         z-index: 2;
       }
-      .overlay-right {
-        transform: translateX(-100%);
-        opacity: 0;
-      }
-      .overlay-left {
-        transform: translateX(-100%);
-        opacity: 1;
-        z-index: 2;
-      }
     `}
 `;
 
@@ -131,8 +122,9 @@ const Form = styled.form`
   }
 `;
 
-const Overlay = styled.div`
+const OverlayContainer = styled.div`
   position: absolute;
+  top: 0;
   right: 0;
   width: 50%;
   height: 100%;
@@ -142,21 +134,40 @@ const Overlay = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  transition: all 0.5s;
+  transition: transform 0.5s ease-in-out;
 
-  ${({ left }) =>
-    left &&
-    css`
-      transform: translateX(100%);
-      opacity: 0;
-    `}
+  ${({ isLoginMode }) =>
+    isLoginMode
+      ? css`
+          transform: translateX(0);
+        `
+      : css`
+          transform: translateX(-100%);
+        `}
+`;
 
-  ${({ right }) =>
-    right &&
-    css`
-      transform: translateX(-100%);
-      opacity: 1;
-    `}
+const OverlayText = styled.div`
+  text-align: center;
+
+  h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    margin: 0 0 20px;
+    font-size: 16px;
+  }
+
+  button {
+    border: none;
+    background: none;
+    color: #fff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+  }
 `;
 
 const Signin = () => {
@@ -208,13 +219,6 @@ const Signin = () => {
     if (formData.loginEmail === storedEmail && formData.loginPassword === storedPassword) {
       toast.success('로그인 성공!');
       navigate('/');
-      if (formData.rememberMe) {
-        localStorage.setItem('loginEmail', formData.loginEmail);
-        localStorage.setItem('loginPassword', formData.loginPassword);
-      } else {
-        localStorage.removeItem('loginEmail');
-        localStorage.removeItem('loginPassword');
-      }
     } else {
       toast.error('아이디 또는 비밀번호가 잘못되었습니다.');
     }
@@ -263,10 +267,6 @@ const Signin = () => {
             <button type="button" onClick={handleLogin}>
               로그인
             </button>
-            <p>
-              회원이 아닌가요?{' '}
-              <span onClick={() => setIsLoginMode(false)}>지금 가입하세요</span>
-            </p>
           </Form>
         </FormContainer>
 
@@ -306,12 +306,24 @@ const Signin = () => {
             <button type="button" onClick={handleSignUp}>
               회원가입
             </button>
-            <p>
-              이미 계정이 있으신가요?{' '}
-              <span onClick={() => setIsLoginMode(true)}>로그인</span>
-            </p>
           </Form>
         </FormContainer>
+
+        <OverlayContainer isLoginMode={isLoginMode}>
+          {isLoginMode ? (
+            <OverlayText>
+              <h2>안녕하세요!</h2>
+              <p>회원가입 후 다양한 서비스를 이용해보세요.</p>
+              <button onClick={() => setIsLoginMode(false)}>회원가입</button>
+            </OverlayText>
+          ) : (
+            <OverlayText>
+              <h2>환영합니다!</h2>
+              <p>기존 계정으로 다시 로그인하세요.</p>
+              <button onClick={() => setIsLoginMode(true)}>로그인</button>
+            </OverlayText>
+          )}
+        </OverlayContainer>
       </Container>
     </Wrapper>
   );
