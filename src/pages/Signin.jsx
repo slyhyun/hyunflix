@@ -102,26 +102,30 @@ const Form = styled.form`
     align-items: center;
   }
 
-  button {
-    border-radius: 20px;
-    border: none;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 15px 45px;
-    margin: 14px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: transform 80ms ease-in;
-    background: #946efd;
-    color: white;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+button {
+  border-radius: 20px;
+  border: none;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 15px 45px;
+  margin: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out, transform 80ms ease-in;
+  background: #946efd;
+  color: white;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
 
-    &:active {
-      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
-        inset -2px -2px 5px rgba(255, 255, 255, 0.1);
-    }
+  &:hover {
+    background: #7d5ed5; /* 호버 시 살짝 어두워지는 효과 */
   }
+
+  &:active {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
+      inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+  }
+}
 
   h2 {
     margin: 0 0 20px;
@@ -183,13 +187,28 @@ const OverlayText = styled.div`
   }
 
   button {
+    border-radius: 20px;
     border: none;
-    background: none;
-    color: #fff;
-    text-decoration: underline;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 15px 45px;
+    margin: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
+    transition: background-color 150ms ease-in-out, transform 80ms ease-in;
+    background: #161b22; /* 박스 디자인 적용 */
+    color: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+
+    &:hover {
+      background: #292d36; /* 버튼 호버 효과 */
+    }
+
+    &:active {
+      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
+        inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+    }
   }
 `;
 
