@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // useLocation 추가
+import { useNavigate, useLocation } from "react-router-dom";
 import { GrLogout } from "react-icons/gr";
 import { BiSolidCameraMovie } from "react-icons/bi";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -89,6 +89,13 @@ const LogoutButton = styled.div`
 const HamburgerIcon = styled(GiHamburgerMenu)`
     font-size: 24px;
     cursor: pointer;
+    position: fixed; /* 위치 고정 */
+    right: 20px; /* 스크롤 바에 가리지 않도록 조정 */
+    top: 25px; /* 상단 간격 조정 */
+    transition: color 0.3s; /* 호버 효과를 위해 색상 변화 추가 */
+    &:hover {
+        color: #946efd; /* 다른 메뉴들과 동일한 호버 색상 */
+    }
 `;
 
 const Header = () => {
@@ -98,7 +105,7 @@ const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation(); // 현재 경로를 가져오기 위해 추가
+    const location = useLocation();
   
     useEffect(() => {
       const storedUsername = localStorage.getItem("username");
@@ -202,7 +209,6 @@ const Header = () => {
         )}
       </HeaderWrapper>
     );
-  };
-  
-  export default Header;
-  
+};
+
+export default Header;
