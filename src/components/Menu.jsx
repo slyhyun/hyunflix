@@ -7,8 +7,8 @@ import { GrLogout } from "react-icons/gr";
 const MenuWrapper = styled.div`
     position: fixed;
     top: 0;
-    left: 0;
-    width: 100%;
+    right: 0; /* 메뉴가 오른쪽에서 나타나도록 설정 */
+    width: 300px;
     height: 100%;
     background-color: #000;
     color: #fff;
@@ -18,6 +18,8 @@ const MenuWrapper = styled.div`
     justify-content: flex-start;
     align-items: center;
     padding: 20px;
+    transform: ${(props) => (props.isOpen ? "translateX(0)" : "translateX(100%)")};
+    transition: transform 0.3s ease-in-out;
 `;
 
 const CloseButton = styled.button`
@@ -26,12 +28,12 @@ const CloseButton = styled.button`
     border: none;
     color: #fff;
     font-size: 24px;
-    position: fixed; /* 위치 고정 */
-    right: 20px; /* 스크롤 바에 가리지 않도록 조정 */
-    top: 35px; /* 상단 간격 조정 */
+    position: absolute;
+    top: 25px;
+    right: 20px;
     cursor: pointer;
     transition: color 0.3s;
-    
+
     &:hover {
         color: #946efd;
     }
@@ -43,6 +45,7 @@ const Logo = styled.div`
     margin-bottom: 40px;
     cursor: pointer;
     transition: color 0.3s;
+
     .movie-icon {
         font-size: 36px;
         margin-right: 10px;
@@ -100,7 +103,7 @@ const LogoutButton = styled.div`
     }
 `;
 
-const Menu = ({ handleLogout, onClose }) => {
+const Menu = ({ handleLogout, onClose, isOpen }) => {
     const navigate = useNavigate();
 
     const handleNavigation = (path) => {
@@ -109,7 +112,7 @@ const Menu = ({ handleLogout, onClose }) => {
     };
 
     return (
-        <MenuWrapper>
+        <MenuWrapper isOpen={isOpen}>
             <CloseButton onClick={onClose}>✖</CloseButton>
             <Logo onClick={() => handleNavigation("/")}>
                 <BiSolidCameraMovie className="movie-icon" />
