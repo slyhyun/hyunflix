@@ -29,7 +29,7 @@ const CloseButton = styled.button`
     color: #fff;
     font-size: 24px;
     position: absolute;
-    top: 25px;
+    top: 20px;
     right: 20px;
     cursor: pointer;
     transition: color 0.3s;
@@ -40,8 +40,9 @@ const CloseButton = styled.button`
 `;
 
 const Logo = styled.div`
-    display: flex;n
-    align-items: center;
+    display: flex;
+    align-items: center; /* 수직 정렬 */
+    justify-content: center; /* 수평 정렬 */
     margin-bottom: 40px;
     cursor: pointer;
     transition: color 0.3s;
@@ -54,12 +55,14 @@ const Logo = styled.div`
     .logo-text {
         font-size: 24px;
         font-weight: bold;
+        line-height: 1; /* 텍스트 줄 간격 조정 */
     }
 
     &:hover {
         color: #946efd;
     }
 `;
+
 
 const MenuList = styled.ul`
     list-style: none;
