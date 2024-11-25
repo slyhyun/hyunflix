@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { BiSolidCameraMovie } from "react-icons/bi";
@@ -7,7 +7,7 @@ import { GrLogout } from "react-icons/gr";
 const MenuWrapper = styled.div`
     position: fixed;
     top: 0;
-    right: 0; /* 메뉴가 오른쪽에서 나타나도록 설정 */
+    right: 0;
     width: 300px;
     height: 100%;
     background-color: #000;
@@ -41,8 +41,8 @@ const CloseButton = styled.button`
 
 const Logo = styled.div`
     display: flex;
-    align-items: center; /* 수직 정렬 */
-    justify-content: center; /* 수평 정렬 */
+    align-items: center;
+    justify-content: center;
     margin-bottom: 40px;
     cursor: pointer;
     transition: color 0.3s;
@@ -55,14 +55,13 @@ const Logo = styled.div`
     .logo-text {
         font-size: 24px;
         font-weight: bold;
-        line-height: 1; /* 텍스트 줄 간격 조정 */
+        line-height: 1;
     }
 
     &:hover {
         color: #946efd;
     }
 `;
-
 
 const MenuList = styled.ul`
     list-style: none;
@@ -80,18 +79,12 @@ const MenuItem = styled.li`
     &:hover {
         color: #946efd;
     }
-
-    ${(props) =>
-        props.active &&
-        `
-        color: #946efd;
-    `}
 `;
 
 const LogoutButton = styled.div`
     display: flex;
     align-items: center;
-    margin-top: 40px;
+    margin-top: 10px;
     cursor: pointer;
     color: white;
     transition: color 0.3s;
@@ -106,8 +99,28 @@ const LogoutButton = styled.div`
     }
 `;
 
+const UsernameDisplay = styled.span`
+    color: white;
+    font-size: 16px;
+    margin-top: 40px;  // 로그아웃 버튼 위의 여백
+    transition: color 0.3s;
+
+    &:hover {
+        color: #946efd;
+    }
+`;
+
 const Menu = ({ handleLogout, onClose, isOpen }) => {
+    const [username, setUsername] = useState("");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+            const name = storedUsername.split("@")[0];
+            setUsername(name);
+        }
+    }, []);
 
     const handleNavigation = (path) => {
         navigate(path);
@@ -133,6 +146,7 @@ const Menu = ({ handleLogout, onClose, isOpen }) => {
                     내가 찜한 리스트
                 </MenuItem>
             </MenuList>
+            {username && <UsernameDisplay>{username}님</UsernameDisplay>}
             <LogoutButton onClick={handleLogout}>
                 <GrLogout />
                 <span>로그아웃</span>
