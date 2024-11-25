@@ -62,7 +62,7 @@ const MovieOverlay = styled.div`
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
+    width: 90%;
     height: 40%;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
     color: white;
