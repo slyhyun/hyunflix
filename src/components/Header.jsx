@@ -86,6 +86,12 @@ const LogoutButton = styled.div`
     }
 `;
 
+const UsernameDisplay = styled.span`
+    color: white;  // 흰색 글씨
+    font-size: 16px;
+    margin-right: 10px;  // 로그아웃 버튼과의 간격
+`;
+
 const HamburgerIcon = styled(GiHamburgerMenu)`
     font-size: 24px;
     cursor: pointer;
@@ -195,6 +201,7 @@ const Header = () => {
 
             {!isMobile && (
                 <UserActions>
+                    {username && <UsernameDisplay>{username}님</UsernameDisplay>}
                     <LogoutButton onClick={handleLogout}>
                         <GrLogout />
                         <span>로그아웃</span>
