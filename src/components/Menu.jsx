@@ -1,56 +1,134 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { BiSolidCameraMovie } from "react-icons/bi";
+import { GrLogout } from "react-icons/gr";
 
-const Menu = ({ handleLogout, username, onClose }) => {
+const MenuWrapper = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    color: #fff;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+`;
+
+const CloseButton = styled.button`
+    align-self: flex-end;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s;
+    
+    &:hover {
+        color: #946efd;
+    }
+`;
+
+const Logo = styled.div`
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    cursor: pointer;
+    transition: color 0.3s;
+    .movie-icon {
+        font-size: 36px;
+        margin-right: 10px;
+    }
+
+    .logo-text {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    &:hover {
+        color: #946efd;
+    }
+`;
+
+const MenuList = styled.ul`
+    list-style: none;
+    padding: 0;
+    width: 100%;
+`;
+
+const MenuItem = styled.li`
+    font-size: 18px;
+    margin: 20px 0;
+    text-align: center;
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+        color: #946efd;
+    }
+
+    ${(props) =>
+        props.active &&
+        `
+        color: #946efd;
+    `}
+`;
+
+const LogoutButton = styled.div`
+    display: flex;
+    align-items: center;
+    margin-top: 40px;
+    cursor: pointer;
+    color: white;
+    transition: color 0.3s;
+
+    &:hover {
+        color: red;
+    }
+
+    span {
+        margin-left: 8px;
+        font-size: 16px;
+    }
+`;
+
+const Menu = ({ handleLogout, onClose }) => {
     const navigate = useNavigate();
 
     const handleNavigation = (path) => {
         navigate(path);
-        onClose(); // 메뉴 닫기
+        onClose();
     };
 
     return (
-        <div className="menu-wrapper">
-            <button className="close-button" onClick={onClose}>
-                ✖
-            </button>
-            <ul className="menu-list">
-                <li className="menu-username">
-                    {username ? (
-                        <>
-                            {username}님
-                            <p className="welcome-message">환영합니다!</p>
-                        </>
-                    ) : (
-                        "로그인 해주세요"
-                    )}
-                </li>
-                <li className="menu-item" onClick={() => handleNavigation("/")}>
-                    홈
-                </li>
-                <li
-                    className="menu-item"
-                    onClick={() => handleNavigation("/popular")}
-                >
+        <MenuWrapper>
+            <CloseButton onClick={onClose}>✖</CloseButton>
+            <Logo onClick={() => handleNavigation("/")}>
+                <BiSolidCameraMovie className="movie-icon" />
+                <h1 className="logo-text">Hyunflix</h1>
+            </Logo>
+            <MenuList>
+                <MenuItem onClick={() => handleNavigation("/")}>홈</MenuItem>
+                <MenuItem onClick={() => handleNavigation("/popular")}>
                     대세 콘텐츠
-                </li>
-                <li
-                    className="menu-item"
-                    onClick={() => handleNavigation("/search")}
-                >
+                </MenuItem>
+                <MenuItem onClick={() => handleNavigation("/search")}>
                     찾아보기
-                </li>
-                <li
-                    className="menu-item"
-                    onClick={() => handleNavigation("/wishlist")}
-                >
+                </MenuItem>
+                <MenuItem onClick={() => handleNavigation("/wishlist")}>
                     내가 찜한 리스트
-                </li>
-                <li className="menu-item logout" onClick={handleLogout}>
-                    로그아웃
-                </li>
-            </ul>
-        </div>
+                </MenuItem>
+            </MenuList>
+            <LogoutButton onClick={handleLogout}>
+                <GrLogout />
+                <span>로그아웃</span>
+            </LogoutButton>
+        </MenuWrapper>
     );
 };
 
