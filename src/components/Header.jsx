@@ -87,10 +87,16 @@ const LogoutButton = styled.div`
 `;
 
 const UsernameDisplay = styled.span`
-    color: white;  // 흰색 글씨
+    color: white;  // 기본 흰색 글씨
     font-size: 16px;
     margin-right: 10px;  // 로그아웃 버튼과의 간격
+    transition: color 0.3s;  // 색상 변경 시 트랜지션 적용
+
+    &:hover {
+        color: #946efd;  // 마우스 호버 시 연보라색으로 변경
+    }
 `;
+
 
 const HamburgerIcon = styled(GiHamburgerMenu)`
     font-size: 24px;
