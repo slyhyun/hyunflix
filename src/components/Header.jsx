@@ -89,125 +89,129 @@ const LogoutButton = styled.div`
 const HamburgerIcon = styled(GiHamburgerMenu)`
     font-size: 24px;
     cursor: pointer;
-    position: fixed; /* 위치 고정 */
-    right: 20px; /* 스크롤 바에 가리지 않도록 조정 */
-    top: 25px; /* 상단 간격 조정 */
-    transition: color 0.3s; /* 호버 효과를 위해 색상 변화 추가 */
+    position: fixed;
+    right: 20px;
+    top: 25px;
+    transition: color 0.3s;
     &:hover {
-        color: #946efd; /* 다른 메뉴들과 동일한 호버 색상 */
+        color: #946efd;
     }
 `;
 
 const Header = () => {
     const [username, setUsername] = useState("");
-    const [menu, setMenu] = useState(false);
+    const [isOpen, setIsOpen] = useState(false); // 메뉴의 열림 상태 관리
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-  
+
     useEffect(() => {
-      const storedUsername = localStorage.getItem("username");
-      if (storedUsername) {
-        const name = storedUsername.split("@")[0];
-        setUsername(name);
-      }
-  
-      const handleResize = () => {
-        setIsMobile(window.innerWidth <= 768);
-        if (window.innerWidth > 768) {
-          setMenu(false);
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+            const name = storedUsername.split("@")[0];
+            setUsername(name);
         }
-      };
-  
-      const handleScroll = () => {
-        setIsScrolled(window.scrollY > 10);
-      };
-  
-      window.addEventListener("resize", handleResize);
-      window.addEventListener("scroll", handleScroll);
-  
-      return () => {
-        window.removeEventListener("resize", handleResize);
-        window.removeEventListener("scroll", handleScroll);
-      };
+
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+            if (window.innerWidth > 768) {
+                setIsOpen(false); // 데스크톱에서는 메뉴 닫기
+            }
+        };
+
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 10);
+        };
+
+        window.addEventListener("resize", handleResize);
+        window.addEventListener("scroll", handleScroll);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+            window.removeEventListener("scroll", handleScroll);
+        };
     }, []);
-  
+
     const handleLogout = () => {
-      setUsername("");
-      navigate("/signin");
+        setUsername("");
+        navigate("/signin");
     };
-  
+
     const toggleMenu = () => {
-      setMenu((prev) => !prev);
+        setIsOpen((prev) => !prev);
     };
-  
+
     const closeMenu = () => {
-      setMenu(false);
+        setIsOpen(false);
     };
-  
+
     const navigateTo = (path) => {
-      navigate(path);
-      closeMenu();
+        navigate(path);
+        closeMenu();
     };
-  
+
     return (
-      <HeaderWrapper
-        isScrolled={isScrolled}
-        isHovered={isHovered}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <Logo onClick={() => navigateTo("/")}>
-          <BiSolidCameraMovie className="movie-icon" />
-          <h1 className="logo-text">Hyunflix</h1>
-        </Logo>
-  
-        {!isMobile && (
-          <Nav>
-            <NavItem
-              onClick={() => navigateTo("/")}
-              active={location.pathname === "/"}
-            >
-              홈
-            </NavItem>
-            <NavItem
-              onClick={() => navigateTo("/popular")}
-              active={location.pathname === "/popular"}
-            >
-              대세 콘텐츠
-            </NavItem>
-            <NavItem
-              onClick={() => navigateTo("/search")}
-              active={location.pathname === "/search"}
-            >
-              찾아보기
-            </NavItem>
-            <NavItem
-              onClick={() => navigateTo("/wishlist")}
-              active={location.pathname === "/wishlist"}
-            >
-              내가 찜한 리스트
-            </NavItem>
-          </Nav>
-        )}
-  
-        {!isMobile && (
-          <UserActions>
-            <LogoutButton onClick={handleLogout}>
-              <GrLogout />
-              <span>로그아웃</span>
-            </LogoutButton>
-          </UserActions>
-        )}
-  
-        {isMobile && <HamburgerIcon onClick={toggleMenu} />}
-  
-        {menu && isMobile && (
-          <Menu handleLogout={handleLogout} username={username} onClose={closeMenu} />
-        )}
-      </HeaderWrapper>
+        <HeaderWrapper
+            isScrolled={isScrolled}
+            isHovered={isHovered}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <Logo onClick={() => navigateTo("/")}>
+                <BiSolidCameraMovie className="movie-icon" />
+                <h1 className="logo-text">Hyunflix</h1>
+            </Logo>
+
+            {!isMobile && (
+                <Nav>
+                    <NavItem
+                        onClick={() => navigateTo("/")}
+                        active={location.pathname === "/"}
+                    >
+                        홈
+                    </NavItem>
+                    <NavItem
+                        onClick={() => navigateTo("/popular")}
+                        active={location.pathname === "/popular"}
+                    >
+                        대세 콘텐츠
+                    </NavItem>
+                    <NavItem
+                        onClick={() => navigateTo("/search")}
+                        active={location.pathname === "/search"}
+                    >
+                        찾아보기
+                    </NavItem>
+                    <NavItem
+                        onClick={() => navigateTo("/wishlist")}
+                        active={location.pathname === "/wishlist"}
+                    >
+                        내가 찜한 리스트
+                    </NavItem>
+                </Nav>
+            )}
+
+            {!isMobile && (
+                <UserActions>
+                    <LogoutButton onClick={handleLogout}>
+                        <GrLogout />
+                        <span>로그아웃</span>
+                    </LogoutButton>
+                </UserActions>
+            )}
+
+            {isMobile && <HamburgerIcon onClick={toggleMenu} />}
+
+            {isMobile && (
+                <Menu
+                    isOpen={isOpen}
+                    handleLogout={handleLogout}
+                    onClose={closeMenu}
+                />
+            )}
+        </HeaderWrapper>
     );
 };
 
