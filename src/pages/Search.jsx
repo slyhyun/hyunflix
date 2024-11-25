@@ -119,9 +119,9 @@ const TopButton = styled.button`
     background-color: #2f2f2f;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px 15px;
     font-size: 1rem;
-    border-radius: 50%;
+    border-radius: 5px;
     cursor: pointer;
     transition: color 0.3s;
 
