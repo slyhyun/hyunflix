@@ -26,6 +26,9 @@ const CloseButton = styled.button`
     border: none;
     color: #fff;
     font-size: 24px;
+    position: fixed; /* 위치 고정 */
+    right: 20px; /* 스크롤 바에 가리지 않도록 조정 */
+    top: 35px; /* 상단 간격 조정 */
     cursor: pointer;
     transition: color 0.3s;
     
@@ -35,7 +38,7 @@ const CloseButton = styled.button`
 `;
 
 const Logo = styled.div`
-    display: flex;
+    display: flex;n
     align-items: center;
     margin-bottom: 40px;
     cursor: pointer;
