@@ -55,7 +55,7 @@ const SearchHistoryDropdown = styled.ul`
     background-color: #2f2f2f;
     border-radius: 5px;
     width: 90%;
-    max-width: 300px;
+    max-width: 250px;
     max-height: 200px;
     overflow-y: auto;
     z-index: 10;
@@ -67,10 +67,10 @@ const SearchHistoryDropdown = styled.ul`
         padding: 10px 15px;
         color: white;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: color 0.3s;
 
         &:hover {
-            background-color: #3a3a3a;
+            color: #946efd;
         }
     }
 `;
