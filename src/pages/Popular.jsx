@@ -47,11 +47,11 @@ const MoviesGrid = styled.div`
     margin-bottom: 20px;
 
     @media (max-width: 768px) {
-        grid-template-columns: repeat(3, 1fr); /* 화면 너비 768px 이하일 때 2열 */
+        grid-template-columns: repeat(3, 1fr); /* 화면 너비 768px 이하일 때 3열 */
     }
 
     @media (min-width: 769px) and (max-width: 1188px) {
-        grid-template-columns: repeat(5, 1fr); /* 화면 너비 769px ~ 1188px일 때 4열 */
+        grid-template-columns: repeat(5, 1fr); /* 화면 너비 769px ~ 1188px일 때 5열 */
     }
 
     @media (min-width: 1189px) {
@@ -173,15 +173,16 @@ const Popular = () => {
         table: [],
         scroll: [],
     });
-    const [loading, setLoading] = useState(true); // 초기 로딩 상태
-    const [scrollLoading, setScrollLoading] = useState(false); // 스크롤 로딩 상태
+    const [loading, setLoading] = useState(true); 
+    const [scrollLoading, setScrollLoading] = useState(false); 
     const [tablePage, setTablePage] = useState(1);
-    const [scrollPage, setScrollPage] = useState(1); // 스크롤 페이지 관리
+    const [scrollPage, setScrollPage] = useState(1); 
     const [view, setView] = useState("table");
     const [wishlist, setWishlist] = useState(
         JSON.parse(localStorage.getItem("wishlist")) || []
     );
     const [showTopButton, setShowTopButton] = useState(false);
+    const [cardsPerPage, setCardsPerPage] = useState(14); 
 
     const fetchMoviesForTable = async () => {
         const password = localStorage.getItem("password");
@@ -191,7 +192,7 @@ const Popular = () => {
         }
 
         try {
-            setLoading(true); // 로딩 시작
+            setLoading(true); 
             const allMovies = [];
             for (let page = 1; page <= 50; page++) {
                 const response = await axios.get(
@@ -205,10 +206,10 @@ const Popular = () => {
                 );
             }
             setMovies((prev) => ({ ...prev, table: allMovies }));
-            setLoading(false); // 로딩 종료
+            setLoading(false); 
         } catch (error) {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
-            setLoading(false); // 로딩 종료
+            setLoading(false); 
         }
     };
 
@@ -220,7 +221,7 @@ const Popular = () => {
         }
 
         try {
-            setScrollLoading(true); // 스크롤 로딩 시작
+            setScrollLoading(true); 
             const response = await axios.get(
                 `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${scrollPage}`
             );
@@ -228,10 +229,10 @@ const Popular = () => {
                 ...prev,
                 scroll: [...prev.scroll, ...response.data.results],
             }));
-            setScrollLoading(false); // 스크롤 로딩 종료
+            setScrollLoading(false); 
         } catch (error) {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
-            setScrollLoading(false); // 로딩 종료
+            setScrollLoading(false); 
         }
     };
 
@@ -256,7 +257,7 @@ const Popular = () => {
                 window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
                 !scrollLoading
             ) {
-                setScrollPage((prev) => prev + 1); // 페이지 증가
+                setScrollPage((prev) => prev + 1); 
             }
             setShowTopButton(window.scrollY > 300);
         };
@@ -266,6 +267,24 @@ const Popular = () => {
             return () => window.removeEventListener("scroll", handleScroll);
         }
     }, [view, scrollLoading]);
+
+    useEffect(() => {
+        const calculateCardsPerPage = () => {
+            const width = window.innerWidth;
+            if (width <= 768) return 6; 
+            if (width <= 1188) return 10; 
+            return 14; 
+        };
+
+        setCardsPerPage(calculateCardsPerPage());
+
+        const handleResize = () => {
+            setCardsPerPage(calculateCardsPerPage());
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const toggleWishlist = (movie) => {
         const exists = wishlist.some((item) => item.id === movie.id);
@@ -280,8 +299,9 @@ const Popular = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    const renderMovies = (movies) =>
-        movies.map((movie) => {
+    // renderMovies 함수 추가
+    const renderMovies = (moviesList) =>
+        moviesList.map((movie) => {
             const isWishlisted = wishlist.some((item) => item.id === movie.id);
             return (
                 <MovieCard key={movie._uniqueId} onClick={() => toggleWishlist(movie)}>
@@ -300,8 +320,10 @@ const Popular = () => {
         });
 
     const currentMovies = React.useMemo(() => {
-        return movies.table.slice((tablePage - 1) * 14, tablePage * 14);
-    }, [movies.table, tablePage]);
+        const startIndex = (tablePage - 1) * cardsPerPage;
+        const endIndex = startIndex + cardsPerPage;
+        return movies.table.slice(startIndex, endIndex);
+    }, [movies.table, tablePage, cardsPerPage]);
 
     return (
         <>
@@ -325,19 +347,19 @@ const Popular = () => {
                                 이전
                             </button>
                             <span>
-                                {tablePage} / {Math.ceil(movies.table.length / 14)}
+                                {tablePage} / {Math.ceil(movies.table.length / cardsPerPage)}
                             </span>
                             <button
                                 onClick={() =>
                                     setTablePage((prev) =>
                                         Math.min(
-                                            Math.ceil(movies.table.length / 14),
+                                            Math.ceil(movies.table.length / cardsPerPage),
                                             prev + 1
                                         )
                                     )
                                 }
                                 disabled={
-                                    tablePage === Math.ceil(movies.table.length / 14)
+                                    tablePage === Math.ceil(movies.table.length / cardsPerPage)
                                 }
                             >
                                 다음
@@ -347,7 +369,7 @@ const Popular = () => {
                 ) : (
                     <>
                         <MoviesGrid>{renderMovies(movies.scroll)}</MoviesGrid>
-                        {scrollLoading && <Loading />} {/* 로딩 효과 추가 */}
+                        {scrollLoading && <Loading />}
                     </>
                 )}
 
