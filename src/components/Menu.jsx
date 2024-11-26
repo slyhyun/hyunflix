@@ -137,13 +137,13 @@ const Menu = ({ handleLogout, onClose, isOpen }) => {
             <MenuList>
                 <MenuItem onClick={() => handleNavigation("/")}>홈</MenuItem>
                 <MenuItem onClick={() => handleNavigation("/popular")}>
-                    대세 콘텐츠
+                    인기
                 </MenuItem>
                 <MenuItem onClick={() => handleNavigation("/search")}>
-                    찾아보기
+                    찾기
                 </MenuItem>
                 <MenuItem onClick={() => handleNavigation("/wishlist")}>
-                    내가 찜한 리스트
+                    위시리스트
                 </MenuItem>
             </MenuList>
             {username && <UsernameDisplay>{username}님</UsernameDisplay>}

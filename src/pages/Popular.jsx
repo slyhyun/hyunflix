@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import Header from "../components/Header";
@@ -186,12 +186,12 @@ const Popular = () => {
 
     useEffect(() => {
         if (view === "table") {
-            document.body.style.overflow = "hidden"; // Table View: 스크롤 비활성화
+            document.body.style.overflow = "hidden"; 
         } else {
-            document.body.style.overflow = "auto"; // Infinite Scroll: 스크롤 활성화
+            document.body.style.overflow = "auto"; 
         }
         return () => {
-            document.body.style.overflow = "auto"; // 컴포넌트 언마운트 시 초기화
+            document.body.style.overflow = "auto"; 
         };
     }, [view]);
 
@@ -224,7 +224,7 @@ const Popular = () => {
         }
     };
 
-    const fetchMoviesForScroll = async () => {
+    const fetchMoviesForScroll = useCallback(async () => {
         const password = localStorage.getItem("password");
         if (!password) {
             console.error("로그인이 필요합니다.");
@@ -245,7 +245,7 @@ const Popular = () => {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
             setScrollLoading(false); 
         }
-    };
+    }, [scrollPage]);
 
     useEffect(() => {
         if (view === "table") {
@@ -253,13 +253,13 @@ const Popular = () => {
         } else if (view === "infinite" && scrollPage === 1) {
             fetchMoviesForScroll();
         }
-    }, [view]);
+    }, [scrollPage, view, fetchMoviesForScroll]);
 
     useEffect(() => {
         if (view === "infinite" && scrollPage > 1) {
             fetchMoviesForScroll();
         }
-    }, [scrollPage]);
+    }, [scrollPage, view, fetchMoviesForScroll]);
 
     useEffect(() => {
         const handleScroll = () => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import Header from "../components/Header";
@@ -23,6 +23,7 @@ const FiltersContainer = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     margin-bottom: 20px;
+    position: relative;
 
     input,
     select,
@@ -47,6 +48,33 @@ const FiltersContainer = styled.div`
     }
 `;
 
+const SearchHistoryDropdown = styled.ul`
+    position: absolute;
+    top: 30px;
+    left: 5px;
+    background-color: #2f2f2f;
+    border-radius: 5px;
+    width: 90%;
+    max-width: 250px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    padding: 10px 0;
+    list-style: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    li {
+        padding: 10px 15px;
+        color: white;
+        cursor: pointer;
+        transition: color 0.3s;
+
+        &:hover {
+            color: #946efd;
+        }
+    }
+`;
+
 const MoviesGrid = styled.div`
     display: grid;
     gap: 20px;
@@ -54,15 +82,15 @@ const MoviesGrid = styled.div`
     margin-bottom: 20px;
 
     @media (max-width: 768px) {
-        grid-template-columns: repeat(3, 1fr); /* 화면 너비 768px 이하일 때 3열 */
+        grid-template-columns: repeat(3, 1fr);
     }
 
     @media (min-width: 769px) and (max-width: 1188px) {
-        grid-template-columns: repeat(5, 1fr); /* 화면 너비 769px ~ 1188px일 때 5열 */
+        grid-template-columns: repeat(5, 1fr);
     }
 
     @media (min-width: 1189px) {
-        grid-template-columns: repeat(7, 1fr); /* 화면 너비 1189px 이상일 때 7열 */
+        grid-template-columns: repeat(7, 1fr);
     }
 `;
 
@@ -149,15 +177,18 @@ const Search = () => {
         sortBy: "popularity.desc",
         query: "",
     });
+    const [searchQuery, setSearchQuery] = useState("");
     const [movies, setMovies] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [wishlist, setWishlist] = useState([]);
     const [showTopButton, setShowTopButton] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [searchHistory, setSearchHistory] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const API_KEY = localStorage.getItem("password");
 
-    const fetchFilteredMovies = async (reset = false) => {
+    const fetchFilteredMovies = useCallback(async (reset = false) => {
         if (!API_KEY) {
             console.error("API Key가 필요합니다.");
             return;
@@ -191,20 +222,9 @@ const Search = () => {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
             setLoading(false);
         }
-    };
+    }, [API_KEY, filters, currentPage]);
 
-    useEffect(() => {
-        setCurrentPage(1);
-        fetchFilteredMovies(true);
-    }, [filters]);
-
-    useEffect(() => {
-        if (currentPage > 1) {
-            fetchFilteredMovies();
-        }
-    }, [currentPage]);
-
-    const handleScroll = () => {
+    const handleScroll = useCallback(() => {
         if (
             window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
             !loading
@@ -212,12 +232,45 @@ const Search = () => {
             setCurrentPage((prevPage) => prevPage + 1);
         }
         setShowTopButton(window.scrollY > 300);
-    };
+    }, [loading]);
 
     useEffect(() => {
+        setCurrentPage(1);
+        fetchFilteredMovies(true);
+    }, [filters, fetchFilteredMovies]);
+
+    useEffect(() => {
+        if (currentPage > 1) {
+            fetchFilteredMovies();
+        }
+    }, [currentPage, fetchFilteredMovies]);
+
+    useEffect(() => {
+        const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+        setWishlist(storedWishlist);
+        const storedHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
+        setSearchHistory(storedHistory);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, [loading]);
+    }, [handleScroll]);
+
+    const handleSearchClick = () => {
+        setFilters({ ...filters, query: searchQuery });
+        updateSearchHistory(searchQuery);
+    };
+
+    const updateSearchHistory = (query) => {
+        if (!query) return;
+
+        const updatedHistory = [query, ...searchHistory.filter((item) => item !== query)];
+
+        if (updatedHistory.length > 10) {
+            updatedHistory.pop();
+        }
+
+        setSearchHistory(updatedHistory);
+        localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
+    };
 
     const resetFilters = () => {
         setFilters({
@@ -226,21 +279,22 @@ const Search = () => {
             sortBy: "popularity.desc",
             query: "",
         });
+        setSearchQuery("");
     };
 
     const toggleWishlist = (movie) => {
         const updatedWishlist = wishlist.some((item) => item.id === movie.id)
             ? wishlist.filter((item) => item.id !== movie.id)
             : [...wishlist, movie];
-
         setWishlist(updatedWishlist);
         localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
     };
 
-    useEffect(() => {
-        const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-        setWishlist(storedWishlist);
-    }, []);
+    const handleSearchHistoryClick = (query) => {
+        setSearchQuery(query);
+        setFilters({ ...filters, query });
+        setShowDropdown(false);
+    };
 
     return (
         <Container>
@@ -249,9 +303,24 @@ const Search = () => {
                 <input
                     type="text"
                     placeholder="영화 제목 검색"
-                    value={filters.query}
-                    onChange={(e) => setFilters({ ...filters, query: e.target.value })}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setShowDropdown(true)}
+                    onBlur={() => setShowDropdown(false)}
                 />
+                {showDropdown && searchHistory.length > 0 && (
+                    <SearchHistoryDropdown>
+                        {searchHistory.map((historyItem, index) => (
+                            <li
+                                key={index}
+                                onMouseDown={() => handleSearchHistoryClick(historyItem)}
+                            >
+                                {historyItem}
+                            </li>
+                        ))}
+                    </SearchHistoryDropdown>
+                )}
+                <button onClick={handleSearchClick}>검색</button>
                 <select
                     value={filters.genre}
                     onChange={(e) => setFilters({ ...filters, genre: e.target.value })}
