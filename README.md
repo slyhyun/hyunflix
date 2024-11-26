@@ -1,70 +1,71 @@
-# Getting Started with Create React App
+# hyunflix
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+영화 정보를 제공하는 웹 애플리케이션입니다. React를 사용하여 제작했습니다.
 
-## Available Scripts
+## 📋 프로젝트 기본 정보
 
-In the project directory, you can run:
+- **프로젝트명**: hyunflix
+- **목적**: React를 사용하여 넷플릭스와 비슷한 영화 정보를 제공하는 웹 애플리케이션 개발
+- **주요 기능**:
+  - 로그인 및 회원가입 기능
+  - 인기 영화 목록 제공 기능
+  - 검색 및 필터링 기능
+  - 위시리스트 기능
+  
+## 🛠 기술 스택
 
-### `npm start`
+- **프론트엔드**: React, JavaScript, CSS-in-JS (styled-components)
+- **상태 관리**: React Hooks
+- **라우팅**: React Router
+- **API**: [TMDB API](https://www.themoviedb.org/documentation/api)
+- **유저 관리**: LocalStorage
+- **기타**: Axios (HTTP 요청)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🚀 설치 및 실행 가이드
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+프로젝트를 로컬 환경에서 실행하려면 다음 단계를 따르세요.
 
-### `npm test`
+```bash
+### 1. 프로젝트 클론
+git clone https://github.com/slyhyun/hyunflix.git
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 2. 패키지 설치
+npm install
 
-### `npm run build`
+### 3. 애플리케이션 실행
+npm start
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+기본적으로 <http://localhost:3000>에서 실행됩니다
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 4. 회원가입
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+회원가입 시 비밀번호는 본인 **TMDB** API키로 사용해야합니다
 
-### `npm run eject`
+### 5. 빌드 및 배포
+npm run build
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📂 프로젝트 주요구조 설명
+```bash
+hyunflix/
+├── src
+│   ├── approutes
+│   │   └── AppRoutes.jsx          # 애플리케이션 라우트 설정
+│   ├── components
+│   │   ├── Banner.jsx             # 배너 컴포넌트
+│   │   ├── Header.jsx             # 헤더 컴포넌트
+│   │   ├── Loading.jsx            # 로딩 컴포넌트
+│   │   ├── Menu.jsx               # 메뉴 컴포넌트
+│   │   └── Partition.jsx          # 파티션 컴포넌트
+│   ├── img                        # 이미지 파일
+│   └── pages
+│       ├── Main                   # 메인 페이지
+│       ├── Popular                # 인기 콘텐츠 페이지
+│       ├── Search                 # 콘텐츠 검색 페이지
+│       ├── Signin                 # 로그인 페이지
+│       └── Wishlist               # 위시리스트 페이지  
+│── App.js                         # 메인 컴포넌트 및 라우팅
+│── index.js                       
+└── README.md                      # 프로젝트 설명 파일
+```
