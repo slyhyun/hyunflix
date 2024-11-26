@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import Header from "../components/Header";
@@ -50,7 +50,7 @@ const FiltersContainer = styled.div`
 
 const SearchHistoryDropdown = styled.ul`
     position: absolute;
-    top: 30px; /* 검색 입력창 바로 아래 */
+    top: 30px;
     left: 5px;
     background-color: #2f2f2f;
     border-radius: 5px;
@@ -188,7 +188,7 @@ const Search = () => {
 
     const API_KEY = localStorage.getItem("password");
 
-    const fetchFilteredMovies = async (reset = false) => {
+    const fetchFilteredMovies = useCallback(async (reset = false) => {
         if (!API_KEY) {
             console.error("API Key가 필요합니다.");
             return;
@@ -222,18 +222,37 @@ const Search = () => {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
             setLoading(false);
         }
-    };
+    }, [API_KEY, filters, currentPage]);
+
+    const handleScroll = useCallback(() => {
+        if (
+            window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
+            !loading
+        ) {
+            setCurrentPage((prevPage) => prevPage + 1);
+        }
+        setShowTopButton(window.scrollY > 300);
+    }, [loading]);
 
     useEffect(() => {
         setCurrentPage(1);
         fetchFilteredMovies(true);
-    }, [filters]);
+    }, [filters, fetchFilteredMovies]);
 
     useEffect(() => {
         if (currentPage > 1) {
             fetchFilteredMovies();
         }
-    }, [currentPage]);
+    }, [currentPage, fetchFilteredMovies]);
+
+    useEffect(() => {
+        const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+        setWishlist(storedWishlist);
+        const storedHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
+        setSearchHistory(storedHistory);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [handleScroll]);
 
     const handleSearchClick = () => {
         setFilters({ ...filters, query: searchQuery });
@@ -246,16 +265,11 @@ const Search = () => {
         const updatedHistory = [query, ...searchHistory.filter((item) => item !== query)];
 
         if (updatedHistory.length > 10) {
-            updatedHistory.pop(); // 10개를 초과하면 오래된 항목 삭제
+            updatedHistory.pop();
         }
 
         setSearchHistory(updatedHistory);
         localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
-    };
-
-    const loadSearchHistory = () => {
-        const storedHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
-        setSearchHistory(storedHistory);
     };
 
     const resetFilters = () => {
@@ -266,16 +280,6 @@ const Search = () => {
             query: "",
         });
         setSearchQuery("");
-    };
-
-    const handleScroll = () => {
-        if (
-            window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
-            !loading
-        ) {
-            setCurrentPage((prevPage) => prevPage + 1);
-        }
-        setShowTopButton(window.scrollY > 300);
     };
 
     const toggleWishlist = (movie) => {
@@ -292,14 +296,6 @@ const Search = () => {
         setShowDropdown(false);
     };
 
-    useEffect(() => {
-        const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-        setWishlist(storedWishlist);
-        loadSearchHistory(); // 로컬 스토리지에서 검색 기록 불러오기
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
     return (
         <Container>
             <Header />
@@ -309,15 +305,15 @@ const Search = () => {
                     placeholder="영화 제목 검색"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => setShowDropdown(true)} // 포커스 시 드롭다운 열기
-                    onBlur={() => setShowDropdown(false)} // 포커스 해제 시 드롭다운 닫기
+                    onFocus={() => setShowDropdown(true)}
+                    onBlur={() => setShowDropdown(false)}
                 />
                 {showDropdown && searchHistory.length > 0 && (
                     <SearchHistoryDropdown>
                         {searchHistory.map((historyItem, index) => (
                             <li
                                 key={index}
-                                onMouseDown={() => handleSearchHistoryClick(historyItem)} // 클릭 시 검색어 적용
+                                onMouseDown={() => handleSearchHistoryClick(historyItem)}
                             >
                                 {historyItem}
                             </li>
