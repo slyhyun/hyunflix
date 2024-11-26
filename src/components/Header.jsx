@@ -147,7 +147,7 @@ const Header = () => {
     }, []);
 
     const handleLogout = () => {
-        setUsername("");
+        localStorage.removeItem("isLogin"); // isLogin 제거
         navigate("/signin");
     };
 
