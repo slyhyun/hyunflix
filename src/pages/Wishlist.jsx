@@ -23,15 +23,15 @@ const MoviesGrid = styled.div`
     margin-bottom: 20px;
 
     @media (max-width: 768px) {
-        grid-template-columns: repeat(3, 1fr); /* 화면 너비 768px 이하일 때 3열 */
+        grid-template-columns: repeat(3, 1fr);
     }
 
     @media (min-width: 769px) and (max-width: 1188px) {
-        grid-template-columns: repeat(5, 1fr); /* 화면 너비 769px ~ 1188px일 때 5열 */
+        grid-template-columns: repeat(5, 1fr);
     }
 
     @media (min-width: 1189px) {
-        grid-template-columns: repeat(7, 1fr); /* 화면 너비 1189px 이상일 때 7열 */
+        grid-template-columns: repeat(7, 1fr);
     }
 `;
 
@@ -92,6 +92,13 @@ const WishlistIndicator = styled.div`
     color: gold;
 `;
 
+const EmptyMessage = styled.div`
+    color: white;
+    font-size: 18px;
+    margin-top: 20px;
+    text-align: center;
+`;
+
 const Wishlist = () => {
     const [state, setState] = useState({
         wishlist: [],
@@ -148,22 +155,26 @@ const Wishlist = () => {
     return (
         <Container>
             <Header />
-            <MoviesGrid>
-                {state.filteredMovies.map((movie) => (
-                    <MovieCard key={movie.id} onClick={() => handleRemoveFromWishlist(movie.id)}>
-                        <MovieImage
-                            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                            alt={movie.title}
-                        />
-                        <MovieOverlay>
-                            <MovieTitle>{movie.title}</MovieTitle>
-                            <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
-                            <MovieInfo>{movie.release_date}</MovieInfo>
-                        </MovieOverlay>
-                        <WishlistIndicator>⭐</WishlistIndicator>
-                    </MovieCard>
-                ))}
-            </MoviesGrid>
+            {state.filteredMovies.length === 0 ? (
+                <EmptyMessage>위시리스트가 비어있습니다.</EmptyMessage>
+            ) : (
+                <MoviesGrid>
+                    {state.filteredMovies.map((movie) => (
+                        <MovieCard key={movie.id} onClick={() => handleRemoveFromWishlist(movie.id)}>
+                            <MovieImage
+                                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                alt={movie.title}
+                            />
+                            <MovieOverlay>
+                                <MovieTitle>{movie.title}</MovieTitle>
+                                <MovieInfo>⭐ {movie.vote_average} / 10</MovieInfo>
+                                <MovieInfo>{movie.release_date}</MovieInfo>
+                            </MovieOverlay>
+                            <WishlistIndicator>⭐</WishlistIndicator>
+                        </MovieCard>
+                    ))}
+                </MoviesGrid>
+            )}
         </Container>
     );
 };
