@@ -23,6 +23,7 @@ const FiltersContainer = styled.div`
     flex-wrap: wrap;
     justify-content: center;
     margin-bottom: 20px;
+    position: relative;
 
     input,
     select,
@@ -43,6 +44,33 @@ const FiltersContainer = styled.div`
 
         &::placeholder {
             color: #aaa;
+        }
+    }
+`;
+
+const SearchHistoryDropdown = styled.ul`
+    position: absolute;
+    top: 30px; /* 검색 입력창 바로 아래 */
+    left: 5px;
+    background-color: #2f2f2f;
+    border-radius: 5px;
+    width: 90%;
+    max-width: 300px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    padding: 10px 0;
+    list-style: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    li {
+        padding: 10px 15px;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+            background-color: #3a3a3a;
         }
     }
 `;
@@ -155,6 +183,8 @@ const Search = () => {
     const [wishlist, setWishlist] = useState([]);
     const [showTopButton, setShowTopButton] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [searchHistory, setSearchHistory] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const API_KEY = localStorage.getItem("password");
 
@@ -207,6 +237,25 @@ const Search = () => {
 
     const handleSearchClick = () => {
         setFilters({ ...filters, query: searchQuery });
+        updateSearchHistory(searchQuery);
+    };
+
+    const updateSearchHistory = (query) => {
+        if (!query) return;
+
+        const updatedHistory = [query, ...searchHistory.filter((item) => item !== query)];
+
+        if (updatedHistory.length > 10) {
+            updatedHistory.pop(); // 10개를 초과하면 오래된 항목 삭제
+        }
+
+        setSearchHistory(updatedHistory);
+        localStorage.setItem("searchHistory", JSON.stringify(updatedHistory));
+    };
+
+    const loadSearchHistory = () => {
+        const storedHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
+        setSearchHistory(storedHistory);
     };
 
     const resetFilters = () => {
@@ -218,11 +267,6 @@ const Search = () => {
         });
         setSearchQuery("");
     };
-
-    useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [loading]);
 
     const handleScroll = () => {
         if (
@@ -242,9 +286,18 @@ const Search = () => {
         localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
     };
 
+    const handleSearchHistoryClick = (query) => {
+        setSearchQuery(query);
+        setFilters({ ...filters, query });
+        setShowDropdown(false);
+    };
+
     useEffect(() => {
         const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
         setWishlist(storedWishlist);
+        loadSearchHistory(); // 로컬 스토리지에서 검색 기록 불러오기
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     return (
@@ -256,7 +309,21 @@ const Search = () => {
                     placeholder="영화 제목 검색"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setShowDropdown(true)} // 포커스 시 드롭다운 열기
+                    onBlur={() => setShowDropdown(false)} // 포커스 해제 시 드롭다운 닫기
                 />
+                {showDropdown && searchHistory.length > 0 && (
+                    <SearchHistoryDropdown>
+                        {searchHistory.map((historyItem, index) => (
+                            <li
+                                key={index}
+                                onMouseDown={() => handleSearchHistoryClick(historyItem)} // 클릭 시 검색어 적용
+                            >
+                                {historyItem}
+                            </li>
+                        ))}
+                    </SearchHistoryDropdown>
+                )}
                 <button onClick={handleSearchClick}>검색</button>
                 <select
                     value={filters.genre}
