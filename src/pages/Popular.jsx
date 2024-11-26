@@ -15,6 +15,7 @@ const Container = styled.div`
     align-items: center;
     padding-top: 100px;
     padding-bottom: 100px;
+    min-height: 80vh;
 `;
 
 const ButtonContainer = styled.div`
