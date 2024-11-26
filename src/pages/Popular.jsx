@@ -146,7 +146,7 @@ const PaginationContainer = styled.div`
 
     span {
         font-size: 1rem;
-        color: white; /* 페이지 번호 텍스트 색상 흰색 */
+        color: white;
     }
 `;
 
@@ -183,6 +183,17 @@ const Popular = () => {
     );
     const [showTopButton, setShowTopButton] = useState(false);
     const [cardsPerPage, setCardsPerPage] = useState(14); 
+
+    useEffect(() => {
+        if (view === "table") {
+            document.body.style.overflow = "hidden"; // Table View: 스크롤 비활성화
+        } else {
+            document.body.style.overflow = "auto"; // Infinite Scroll: 스크롤 활성화
+        }
+        return () => {
+            document.body.style.overflow = "auto"; // 컴포넌트 언마운트 시 초기화
+        };
+    }, [view]);
 
     const fetchMoviesForTable = async () => {
         const password = localStorage.getItem("password");
@@ -299,7 +310,6 @@ const Popular = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    // renderMovies 함수 추가
     const renderMovies = (moviesList) =>
         moviesList.map((movie) => {
             const isWishlisted = wishlist.some((item) => item.id === movie.id);
