@@ -189,19 +189,19 @@ const Header = () => {
                         onClick={() => navigateTo("/popular")}
                         active={location.pathname === "/popular"}
                     >
-                        대세 콘텐츠
+                        인기
                     </NavItem>
                     <NavItem
                         onClick={() => navigateTo("/search")}
                         active={location.pathname === "/search"}
                     >
-                        찾아보기
+                        찾기
                     </NavItem>
                     <NavItem
                         onClick={() => navigateTo("/wishlist")}
                         active={location.pathname === "/wishlist"}
                     >
-                        내가 찜한 리스트
+                        위시리스트
                     </NavItem>
                 </Nav>
             )}
