@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppRoutes from "./approutes/AppRoutes";
