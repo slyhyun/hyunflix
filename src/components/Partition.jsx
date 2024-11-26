@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
@@ -93,7 +93,7 @@ const ArrowButton = styled.button`
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: none; /* 배경 제거 */
+    background: none;
     color: white;
     border: none;
     padding: 5px;
@@ -127,21 +127,45 @@ const Partition = ({ movies, title }) => {
     const [wishlist, setWishlist] = useState(
         JSON.parse(localStorage.getItem("wishlist")) || []
     );
+    const [itemsToShow, setItemsToShow] = useState(7); // 화면에 표시되는 영화 개수 초기값
 
-    const itemsToShow = 7; // 화면에 표시되는 영화 개수
     const cardWidth = 210; // 카드 폭 (200px + 간격 10px)
+
+    // 화면 크기에 따라 itemsToShow 값을 업데이트
+    useEffect(() => {
+        const updateItemsToShow = () => {
+            if (window.innerWidth < 768) {
+                setItemsToShow(3);
+            } else if (window.innerWidth < 1188) {
+                setItemsToShow(5);
+            } else {
+                setItemsToShow(7);
+            }
+        };
+
+        // 초기 설정
+        updateItemsToShow();
+
+        // 윈도우 리사이즈 이벤트 리스너 추가
+        window.addEventListener("resize", updateItemsToShow);
+
+        // 컴포넌트 언마운트 시 리스너 제거
+        return () => {
+            window.removeEventListener("resize", updateItemsToShow);
+        };
+    }, []);
 
     const handleNext = () => {
         setCurrentIndex((prevIndex) => {
-            const maxIndex = Math.ceil(movies.length / itemsToShow) - 1; // 최대 이동 가능 인덱스 계산
-            return prevIndex < maxIndex ? prevIndex + 1 : 0; // 마지막 슬라이드 후 다시 처음으로
+            const maxIndex = Math.ceil(movies.length / itemsToShow) - 1;
+            return prevIndex < maxIndex ? prevIndex + 1 : 0;
         });
     };
 
     const handlePrev = () => {
         setCurrentIndex((prevIndex) => {
             const maxIndex = Math.ceil(movies.length / itemsToShow) - 1;
-            return prevIndex > 0 ? prevIndex - 1 : maxIndex; // 첫 번째 슬라이드에서 마지막으로 이동
+            return prevIndex > 0 ? prevIndex - 1 : maxIndex;
         });
     };
 
@@ -188,7 +212,7 @@ const Partition = ({ movies, title }) => {
                         style={{
                             transform: `translateX(-${
                                 currentIndex * itemsToShow * cardWidth
-                            }px)`, // 이동량 계산
+                            }px)`,
                         }}
                     >
                         {renderMovies()}
