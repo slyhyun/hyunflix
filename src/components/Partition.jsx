@@ -32,11 +32,12 @@ const MovieSlider = styled.div`
 
 const MovieCard = styled.div`
     flex: 0 0 auto;
-    width: 200px;
+    width: 200px; /* 기본 카드 폭 */
     margin-right: 10px;
     position: relative;
     cursor: pointer;
     transition: transform 0.3s;
+    max-width: 200px;
 
     &:hover {
         transform: scale(1.05);
@@ -47,16 +48,21 @@ const MovieCard = styled.div`
         top: 10px;
         right: 10px;
         font-size: 20px;
-        color: #946efd; /* 연보라색 아이콘 */
         display: ${(props) => (props.isWishlisted ? "block" : "none")};
+    }
+
+    @media (max-width: 768px) {
+        width: 150px; /* 화면 크기가 768px 이하일 때 카드 폭을 150px로 조정 */
+        max-width: 150px;
     }
 `;
 
 const MovieImage = styled.img`
     width: 100%;
     height: auto;
-    border-radius: 4px;
+    border-radius: 5px;
 `;
+
 
 const MovieOverlay = styled.div`
     position: absolute;
