@@ -18,16 +18,29 @@ const Container = styled.div`
 
 const MoviesGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
     gap: 20px;
     justify-items: center;
     margin-bottom: 20px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(3, 1fr); /* 화면 너비 768px 이하일 때 3열 */
+    }
+
+    @media (min-width: 769px) and (max-width: 1188px) {
+        grid-template-columns: repeat(5, 1fr); /* 화면 너비 769px ~ 1188px일 때 5열 */
+    }
+
+    @media (min-width: 1189px) {
+        grid-template-columns: repeat(7, 1fr); /* 화면 너비 1189px 이상일 때 7열 */
+    }
 `;
 
 const MovieCard = styled.div`
+    flex: 0 0 auto;
+    width: 100%;
     position: relative;
-    width: 200px;
     cursor: pointer;
+    max-width: 200px;
     transition: transform 0.3s;
 
     &:hover {
@@ -38,7 +51,7 @@ const MovieCard = styled.div`
 const MovieImage = styled.img`
     width: 100%;
     height: auto;
-    border-radius: 4px;
+    border-radius: 5px;
 `;
 
 const MovieOverlay = styled.div`
