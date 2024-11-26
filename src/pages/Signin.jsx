@@ -221,6 +221,7 @@ const Signin = () => {
     password: '',
     confirmPassword: '',
     rememberMe: false,
+    isLogin: false,
     termsAccepted: false,
   });
   const navigate = useNavigate();
@@ -263,21 +264,24 @@ const Signin = () => {
     const storedPassword = localStorage.getItem('password');
 
     if (formData.loginEmail === storedEmail && formData.loginPassword === storedPassword) {
-      toast.success('로그인 성공!');
-      if (formData.rememberMe) {
-        localStorage.setItem('loginEmail', formData.loginEmail);
-        localStorage.setItem('loginPassword', formData.loginPassword);
-        localStorage.setItem('rememberMe', 'true');
-      } else {
-        localStorage.removeItem('loginEmail');
-        localStorage.removeItem('loginPassword');
-        localStorage.removeItem('rememberMe');
-      }
-      navigate('/');
+        toast.success('로그인 성공!');
+        localStorage.setItem('isLogin', 'true'); // 로그인 성공 시 isLogin을 true로 설정
+        if (formData.rememberMe) {
+            localStorage.setItem('loginEmail', formData.loginEmail);
+            localStorage.setItem('loginPassword', formData.loginPassword);
+            localStorage.setItem('rememberMe', 'true');
+        } else {
+            localStorage.removeItem('loginEmail');
+            localStorage.removeItem('loginPassword');
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('isLogin');
+        }
+        navigate('/');
     } else {
-      toast.error('아이디 또는 비밀번호가 잘못되었습니다.');
+        toast.error('아이디 또는 비밀번호가 잘못되었습니다.');
     }
-  };
+};
+
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('loginEmail');
