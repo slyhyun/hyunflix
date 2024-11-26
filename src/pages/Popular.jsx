@@ -161,9 +161,10 @@ const Popular = () => {
         table: [],
         scroll: [],
     });
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true); // 초기 로딩 상태
+    const [scrollLoading, setScrollLoading] = useState(false); // 스크롤 로딩 상태
     const [tablePage, setTablePage] = useState(1);
-    const [scrollPage, setScrollPage] = useState(1); // 스크롤 페이지 상태 추가
+    const [scrollPage, setScrollPage] = useState(1); // 스크롤 페이지 관리
     const [view, setView] = useState("table");
     const [wishlist, setWishlist] = useState(
         JSON.parse(localStorage.getItem("wishlist")) || []
@@ -178,7 +179,7 @@ const Popular = () => {
         }
 
         try {
-            setLoading(true);
+            setLoading(true); // 로딩 시작
             const allMovies = [];
             for (let page = 1; page <= 50; page++) {
                 const response = await axios.get(
@@ -192,10 +193,10 @@ const Popular = () => {
                 );
             }
             setMovies((prev) => ({ ...prev, table: allMovies }));
-            setLoading(false);
+            setLoading(false); // 로딩 종료
         } catch (error) {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
-            setLoading(false);
+            setLoading(false); // 로딩 종료
         }
     };
 
@@ -207,6 +208,7 @@ const Popular = () => {
         }
 
         try {
+            setScrollLoading(true); // 스크롤 로딩 시작
             const response = await axios.get(
                 `https://api.themoviedb.org/3/movie/popular?api_key=${password}&language=ko-KR&page=${scrollPage}`
             );
@@ -214,8 +216,10 @@ const Popular = () => {
                 ...prev,
                 scroll: [...prev.scroll, ...response.data.results],
             }));
+            setScrollLoading(false); // 스크롤 로딩 종료
         } catch (error) {
             console.error("영화 데이터를 불러오는 중 오류가 발생했습니다.");
+            setScrollLoading(false); // 로딩 종료
         }
     };
 
@@ -238,9 +242,9 @@ const Popular = () => {
             if (
                 view === "infinite" &&
                 window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
-                !loading
+                !scrollLoading
             ) {
-                setScrollPage((prev) => prev + 1);
+                setScrollPage((prev) => prev + 1); // 페이지 증가
             }
             setShowTopButton(window.scrollY > 300);
         };
@@ -249,7 +253,7 @@ const Popular = () => {
             window.addEventListener("scroll", handleScroll);
             return () => window.removeEventListener("scroll", handleScroll);
         }
-    }, [view, loading]);
+    }, [view, scrollLoading]);
 
     const toggleWishlist = (movie) => {
         const exists = wishlist.some((item) => item.id === movie.id);
@@ -296,7 +300,7 @@ const Popular = () => {
                     <button onClick={() => setView("infinite")}>Infinite Scroll</button>
                 </ButtonContainer>
 
-                {loading ? (
+                {view === "table" && loading ? (
                     <Loading />
                 ) : view === "table" ? (
                     <>
@@ -329,7 +333,10 @@ const Popular = () => {
                         </PaginationContainer>
                     </>
                 ) : (
-                    <MoviesGrid>{renderMovies(movies.scroll)}</MoviesGrid>
+                    <>
+                        <MoviesGrid>{renderMovies(movies.scroll)}</MoviesGrid>
+                        {scrollLoading && <Loading />} {/* 로딩 효과 추가 */}
+                    </>
                 )}
 
                 {showTopButton && <TopButton onClick={scrollToTop}>Top</TopButton>}
