@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Loading from "./Loading";
@@ -116,6 +116,10 @@ const RightArrow = styled(ArrowButton)`
 const Banner = ({ movies }) => {
     const [selectedMovieIndex, setSelectedMovieIndex] = useState(0);
 
+    const handleNext = useCallback(() => {
+        setSelectedMovieIndex((prevIndex) => (prevIndex + 1) % movies.length);
+    }, [movies.length]);
+
     useEffect(() => {
         if (movies.length === 0) return;
 
@@ -124,7 +128,7 @@ const Banner = ({ movies }) => {
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [movies]);
+    }, [movies, handleNext]);
 
     const handlePrev = () => {
         setSelectedMovieIndex((prevIndex) =>
@@ -132,15 +136,9 @@ const Banner = ({ movies }) => {
         );
     };
 
-    const handleNext = () => {
-        setSelectedMovieIndex((prevIndex) => (prevIndex + 1) % movies.length);
-    };
-
     if (movies.length === 0) {
         return <Loading />;
     }
-
-    const selectedMovie = movies[selectedMovieIndex];
 
     return (
         <BannerWrapper>
