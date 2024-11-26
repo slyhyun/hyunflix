@@ -274,7 +274,6 @@ const Signin = () => {
             localStorage.removeItem('loginEmail');
             localStorage.removeItem('loginPassword');
             localStorage.removeItem('rememberMe');
-            localStorage.removeItem('isLogin');
         }
         navigate('/');
     } else {
