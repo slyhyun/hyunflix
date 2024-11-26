@@ -54,15 +54,15 @@ const MoviesGrid = styled.div`
     margin-bottom: 20px;
 
     @media (max-width: 768px) {
-        grid-template-columns: repeat(3, 1fr); /* 화면 너비 768px 이하일 때 3열 */
+        grid-template-columns: repeat(3, 1fr);
     }
 
     @media (min-width: 769px) and (max-width: 1188px) {
-        grid-template-columns: repeat(5, 1fr); /* 화면 너비 769px ~ 1188px일 때 5열 */
+        grid-template-columns: repeat(5, 1fr);
     }
 
     @media (min-width: 1189px) {
-        grid-template-columns: repeat(7, 1fr); /* 화면 너비 1189px 이상일 때 7열 */
+        grid-template-columns: repeat(7, 1fr);
     }
 `;
 
@@ -149,6 +149,7 @@ const Search = () => {
         sortBy: "popularity.desc",
         query: "",
     });
+    const [searchQuery, setSearchQuery] = useState("");
     const [movies, setMovies] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [wishlist, setWishlist] = useState([]);
@@ -204,6 +205,25 @@ const Search = () => {
         }
     }, [currentPage]);
 
+    const handleSearchClick = () => {
+        setFilters({ ...filters, query: searchQuery });
+    };
+
+    const resetFilters = () => {
+        setFilters({
+            genre: "all",
+            minRating: "all",
+            sortBy: "popularity.desc",
+            query: "",
+        });
+        setSearchQuery("");
+    };
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [loading]);
+
     const handleScroll = () => {
         if (
             window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
@@ -214,25 +234,10 @@ const Search = () => {
         setShowTopButton(window.scrollY > 300);
     };
 
-    useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [loading]);
-
-    const resetFilters = () => {
-        setFilters({
-            genre: "all",
-            minRating: "all",
-            sortBy: "popularity.desc",
-            query: "",
-        });
-    };
-
     const toggleWishlist = (movie) => {
         const updatedWishlist = wishlist.some((item) => item.id === movie.id)
             ? wishlist.filter((item) => item.id !== movie.id)
             : [...wishlist, movie];
-
         setWishlist(updatedWishlist);
         localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
     };
@@ -249,9 +254,10 @@ const Search = () => {
                 <input
                     type="text"
                     placeholder="영화 제목 검색"
-                    value={filters.query}
-                    onChange={(e) => setFilters({ ...filters, query: e.target.value })}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                 />
+                <button onClick={handleSearchClick}>검색</button>
                 <select
                     value={filters.genre}
                     onChange={(e) => setFilters({ ...filters, genre: e.target.value })}
