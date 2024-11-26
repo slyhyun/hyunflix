@@ -148,6 +148,7 @@ const Header = () => {
 
     const handleLogout = () => {
         localStorage.removeItem("isLogin"); // isLogin 제거
+        localStorage.removeItem("searchHistory")
         navigate("/signin");
     };
 
