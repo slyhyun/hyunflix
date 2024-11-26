@@ -7,9 +7,9 @@ const App = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const isLoggedIn = localStorage.getItem('username') !== null; // 로그인 상태 확인
+        const isLoggedIn = localStorage.getItem('isLogin') !== null; // isLogin 값 확인
         if (!isLoggedIn) {
-            navigate('/signin'); // 로그인이 되어 있지 않으면 /signin으로 이동
+            navigate('/signin'); // isLogin이 null이면 /signin으로 이동
         }
     }, [navigate]);
 
