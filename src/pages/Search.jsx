@@ -188,41 +188,44 @@ const Search = () => {
 
     const API_KEY = localStorage.getItem("password");
 
-    const fetchFilteredMovies = useCallback(async (reset = false) => {
-        if (!API_KEY) {
-            console.error("API Key가 필요합니다.");
-            return;
-        }
+    const fetchFilteredMovies = useCallback(
+        async (reset = false) => {
+            if (!API_KEY) {
+                console.error("API Key가 필요합니다.");
+                return;
+            }
 
-        try {
-            setLoading(true);
-            const { genre, minRating, sortBy, query } = filters;
-            const genreFilter = genre !== "all" ? `&with_genres=${genre}` : "";
-            const ratingFilter =
-                minRating !== "all"
-                    ? `&vote_average.gte=${minRating.split("-")[0]}&vote_average.lte=${minRating.split("-")[1]}`
-                    : "";
-            const sortFilter = sortBy ? `&sort_by=${sortBy}` : "";
-            const queryFilter = query ? `&query=${encodeURIComponent(query)}` : "";
+            try {
+                setLoading(true);
+                const { genre, minRating, sortBy, query } = filters;
+                const genreFilter = genre !== "all" ? `&with_genres=${genre}` : "";
+                const ratingFilter =
+                    minRating !== "all"
+                        ? `&vote_average.gte=${minRating.split("-")[0]}&vote_average.lte=${minRating.split("-")[1]}`
+                        : "";
+                const sortFilter = sortBy ? `&sort_by=${sortBy}` : "";
+                const queryFilter = query ? `&query=${encodeURIComponent(query)}` : "";
 
-            const apiEndpoint = query
-                ? `https://api.themoviedb.org/3/search/movie`
-                : `https://api.themoviedb.org/3/discover/movie`;
+                const apiEndpoint = query
+                    ? `https://api.themoviedb.org/3/search/movie`
+                    : `https://api.themoviedb.org/3/discover/movie`;
 
-            const response = await axios.get(
-                `${apiEndpoint}?api_key=${API_KEY}&language=ko-KR&page=${currentPage}${genreFilter}${ratingFilter}${sortFilter}${queryFilter}`
-            );
+                const response = await axios.get(
+                    `${apiEndpoint}?api_key=${API_KEY}&language=ko-KR&page=${currentPage}${genreFilter}${ratingFilter}${sortFilter}${queryFilter}`
+                );
 
-            setMovies((prevMovies) =>
-                reset ? response.data.results : [...prevMovies, ...response.data.results]
-            );
+                setMovies((prevMovies) =>
+                    reset ? response.data.results : [...prevMovies, ...response.data.results]
+                );
 
-            setLoading(false);
-        } catch (error) {
-            console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
-            setLoading(false);
-        }
-    }, [API_KEY, filters, currentPage]);
+                setLoading(false);
+            } catch (error) {
+                console.error("영화 데이터를 불러오는 중 오류가 발생했습니다:", error);
+                setLoading(false);
+            }
+        },
+        [API_KEY, filters, currentPage] // 정확한 종속성 배열 설정
+    );
 
     const handleScroll = useCallback(() => {
         if (
@@ -234,17 +237,17 @@ const Search = () => {
         setShowTopButton(window.scrollY > 300);
     }, [loading]);
 
+    // Filters 변경 시 페이지를 1로 리셋
     useEffect(() => {
         setCurrentPage(1);
-        fetchFilteredMovies(true);
-    }, [filters, fetchFilteredMovies]);
+    }, [filters]);
 
+    // 페이지 변경 시 데이터 로드
     useEffect(() => {
-        if (currentPage > 1) {
-            fetchFilteredMovies();
-        }
+        fetchFilteredMovies(currentPage === 1);
     }, [currentPage, fetchFilteredMovies]);
 
+    // 초기 로드 및 스크롤 이벤트 추가
     useEffect(() => {
         const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
         setWishlist(storedWishlist);
